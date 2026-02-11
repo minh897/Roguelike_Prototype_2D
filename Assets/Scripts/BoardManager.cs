@@ -17,13 +17,13 @@ public class BoardManager : MonoBehaviour
 
     void Start()
     {
-        for (int x = 0; x < tileWidth; x++)
+        for (int y = 0; y < tileHeight; y++)
         {
-            for (int y = 0; y < tileHeight; y++)
+            for (int x = 0; x < tileWidth; x++)
             {
                 Tile tile;
 
-                if (x == 0)
+                if (x == 0 || y == 0 || x == tileWidth - 1 || y == tileHeight - 1)
                 {
                     tile = wallTiles[Random.Range(0, wallTiles.Length)];
                 }
