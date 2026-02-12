@@ -19,44 +19,39 @@ public class PlayerController : MonoBehaviour
 
     void OnEnable()
     {
-        inputActions.Player.Move.started += OnMove;
-        inputActions.Player.Move.canceled += OnMove;
-
+        inputActions.Player.Move.performed += OnMovePerformed;
+        inputActions.Player.Move.canceled += OnMoveCanceled;
         inputActions.Player.Enable();
     }
 
     void OnDisable()
     {
-        inputActions.Player.Move.started -= OnMove;
-        inputActions.Player.Move.canceled -= OnMove;
-
+        inputActions.Player.Move.performed -= OnMovePerformed;
+        inputActions.Player.Move.canceled -= OnMoveCanceled;
         inputActions.Player.Disable();
     }
 
-    private void OnMove(InputAction.CallbackContext context)
+    private void OnMovePerformed(InputAction.CallbackContext context)
     {
-        if (context.started)
-        {
-            var input = context.ReadValue<Vector2>();
-            direction = new((int)input.x, (int)input.y);
-        }
+        var input = context.ReadValue<Vector2>();
+        direction = new((int)input.x, (int)input.y);
+    }
 
-        if (context.canceled)
-        {
-            direction = Vector2Int.zero;
-        }
+    private void OnMoveCanceled(InputAction.CallbackContext context)
+    {
+        direction = Vector2Int.zero;
     }
 
     void Update()
     {
         Vector2Int newCellTarget = _cellPosition;
 
+        // only set direction for a new target cell once per input
         if (direction.sqrMagnitude != 0 && !hasMoved)
         {
             hasMoved = true;
             newCellTarget += direction;
         }
-
         if (direction.sqrMagnitude == 0)
         {
             hasMoved = false;
@@ -69,8 +64,7 @@ public class PlayerController : MonoBehaviour
             CellData cellData = _board.GetCellData(newCellTarget);
             if (cellData != null && cellData.passable)
             {
-                _cellPosition = newCellTarget;
-                transform.position = _board.CellToWorld(_cellPosition);
+                MoveTo(newCellTarget);
             }
         }
     }
@@ -78,8 +72,12 @@ public class PlayerController : MonoBehaviour
     public void Spawn(BoardManager boardManager, Vector2Int cell)
     {
         _board = boardManager;
+        MoveTo(cell);
+    }
+
+    public void MoveTo(Vector2Int cell)
+    {
         _cellPosition = cell;
-        // move the player to the right position
-        transform.position = _board.CellToWorld(cell);
+        transform.position = _board.CellToWorld(_cellPosition);
     }
 }
