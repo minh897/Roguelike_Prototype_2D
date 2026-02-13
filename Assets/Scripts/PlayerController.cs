@@ -7,39 +7,36 @@ public class PlayerController : MonoBehaviour
     private BoardManager _board;
     private Vector2Int _cellPosition;
 
-    private PlayerInputActions inputActions;
-    private Vector2Int direction;
+    private PlayerInputActions _inputActions;
+    private InputAction _moveAction;
+    private Vector2Int _direction;
 
-    private bool hasMoved = false;
+    private bool _hasMoved = false;
 
     void Awake()
     {
-        inputActions = new();
+        _inputActions = new();
+        _moveAction = _inputActions.Player.Move;
     }
 
     void OnEnable()
     {
-        inputActions.Player.Move.performed += OnMovePerformed;
-        inputActions.Player.Move.canceled += OnMoveCanceled;
-        inputActions.Player.Enable();
+        _moveAction.performed += OnMove;
+        _moveAction.canceled += OnMove;
+        _inputActions.Player.Enable();
     }
 
     void OnDisable()
     {
-        inputActions.Player.Move.performed -= OnMovePerformed;
-        inputActions.Player.Move.canceled -= OnMoveCanceled;
-        inputActions.Player.Disable();
+        _moveAction.performed -= OnMove;
+        _moveAction.canceled -= OnMove;
+        _inputActions.Player.Disable();
     }
 
-    private void OnMovePerformed(InputAction.CallbackContext context)
+    private void OnMove(InputAction.CallbackContext context)
     {
         var input = context.ReadValue<Vector2>();
-        direction = new((int)input.x, (int)input.y);
-    }
-
-    private void OnMoveCanceled(InputAction.CallbackContext context)
-    {
-        direction = Vector2Int.zero;
+        _direction = new((int)input.x, (int)input.y);
     }
 
     void Update()
@@ -47,25 +44,22 @@ public class PlayerController : MonoBehaviour
         Vector2Int newCellTarget = _cellPosition;
 
         // only set direction for a new target cell once per input
-        if (direction.sqrMagnitude != 0 && !hasMoved)
+        if (_moveAction.WasPressedThisFrame())
         {
-            hasMoved = true;
-            newCellTarget += direction;
-        }
-        if (direction.sqrMagnitude == 0)
-        {
-            hasMoved = false;
+            newCellTarget += _direction;
+            _hasMoved = true;
         }
 
         // check for a passable tile
         // then move there if it is
-        if (hasMoved)
+        if (_hasMoved)
         {
             CellData cellData = _board.GetCellData(newCellTarget);
             if (cellData != null && cellData.passable)
             {
                 GameManager.Instance.TurnManager.Tick();
                 MoveTo(newCellTarget);
+                _hasMoved = false;
             }
         }
     }
