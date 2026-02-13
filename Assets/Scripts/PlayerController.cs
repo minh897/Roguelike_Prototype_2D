@@ -21,14 +21,14 @@ public class PlayerController : MonoBehaviour
 
     void OnEnable()
     {
-        _moveAction.performed += OnMove;
+        _moveAction.started += OnMove;
         _moveAction.canceled += OnMove;
         _inputActions.Player.Enable();
     }
 
     void OnDisable()
     {
-        _moveAction.performed -= OnMove;
+        _moveAction.started -= OnMove;
         _moveAction.canceled -= OnMove;
         _inputActions.Player.Disable();
     }
@@ -44,7 +44,7 @@ public class PlayerController : MonoBehaviour
         Vector2Int newCellTarget = _cellPosition;
 
         // only set direction for a new target cell once per input
-        if (_moveAction.WasPressedThisFrame())
+        if (_moveAction.WasPressedThisFrame() && _moveAction.IsPressed())
         {
             newCellTarget += _direction;
             _hasMoved = true;
