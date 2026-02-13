@@ -64,11 +64,13 @@ public class PlayerController : MonoBehaviour
             CellData cellData = _board.GetCellData(newCellTarget);
             if (cellData != null && cellData.passable)
             {
+                GameManager.Instance.TurnManager.Tick();
                 MoveTo(newCellTarget);
             }
         }
     }
 
+    // Spawn player character on game board
     public void Spawn(BoardManager boardManager, Vector2Int cell)
     {
         _board = boardManager;

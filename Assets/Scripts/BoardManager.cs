@@ -27,11 +27,10 @@ public class BoardManager : MonoBehaviour
         _tilemap = GetComponentInChildren<Tilemap>();
     }
 
-    void Start()
+    public void Init()
     {
+        // Generate a new game board
         _boardData = new CellData[tileWidth, tileHeight];
-
-        // Generate game board
         for (int y = 0; y < tileHeight; y++)
         {
             for (int x = 0; x < tileWidth; x++)
@@ -52,9 +51,6 @@ public class BoardManager : MonoBehaviour
                 _tilemap.SetTile(position, tile);
             }
         }
-
-        // Spawn player character on game board
-        player.Spawn(this, new Vector2Int(1, 1));
     }
 
     public Vector3 CellToWorld(Vector2Int cellIndex)
