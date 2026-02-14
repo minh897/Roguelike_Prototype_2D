@@ -1,13 +1,17 @@
 using UnityEngine;
+using UnityEngine.UIElements;
 
 public class GameManager : MonoBehaviour
 {
     public static GameManager Instance { get; private set; }
     public TurnManager TurnManager { get; private set; }
 
+    [SerializeField] private UIDocument uiDoc; 
     [SerializeField] private BoardManager board;
     [SerializeField] private PlayerController player;
-    [SerializeField] private int _foodAmount;
+    [SerializeField] private int foodAmount;
+
+    private Label _labelFoodAmount;
 
     void Awake()
     {
@@ -20,6 +24,9 @@ public class GameManager : MonoBehaviour
         Instance = this;
 
         TurnManager = new();
+        
+        // Find the label with the name FoodAmount within the root of UIDocument
+        _labelFoodAmount = uiDoc.rootVisualElement.Q<Label>("FoodAmount");
     }
 
     void OnEnable()
@@ -36,11 +43,13 @@ public class GameManager : MonoBehaviour
     {
         board.Init();
         player.Spawn(board, new Vector2Int(1, 1));
+
+        _labelFoodAmount.text = foodAmount.ToString();
     }
 
     private void OnTurnHappen()
     {
-        _foodAmount -= 1;
-        Debug.Log("Current amount of food: " + _foodAmount);
+        foodAmount -= 1;
+        _labelFoodAmount.text = foodAmount.ToString();
     }
 }
