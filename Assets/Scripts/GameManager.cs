@@ -7,7 +7,7 @@ public class GameManager : MonoBehaviour
 
     [SerializeField] private BoardManager board;
     [SerializeField] private PlayerController player;
-
+    [SerializeField] private int _foodAmount;
 
     void Awake()
     {
@@ -17,14 +17,30 @@ public class GameManager : MonoBehaviour
             Destroy(gameObject);
             return;
         }
-
         Instance = this;
+
+        TurnManager = new();
+    }
+
+    void OnEnable()
+    {
+        TurnManager.OnTick += OnTurnHappen;
+    }
+
+    void OnDisable()
+    {
+        TurnManager.OnTick += OnTurnHappen;
     }
 
     void Start()
     {
-        TurnManager = new();
         board.Init();
         player.Spawn(board, new Vector2Int(1, 1));
+    }
+
+    private void OnTurnHappen()
+    {
+        _foodAmount -= 1;
+        Debug.Log("Current amount of food: " + _foodAmount);
     }
 }

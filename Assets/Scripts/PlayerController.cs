@@ -43,14 +43,14 @@ public class PlayerController : MonoBehaviour
     {
         Vector2Int newCellTarget = _cellPosition;
 
-        // only set direction for a new target cell once per input
+        // Only set direction for a new target cell once per input
         if (_moveAction.WasPressedThisFrame() && _moveAction.IsPressed())
         {
             newCellTarget += _direction;
             _hasMoved = true;
         }
 
-        // check for a passable tile
+        // Check for a passable tile
         // then move there if it is
         if (_hasMoved)
         {
