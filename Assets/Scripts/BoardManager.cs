@@ -5,7 +5,7 @@ using UnityEngine.Tilemaps;
 public class CellData
 {
     public bool passable;
-    public GameObject containedObject;
+    public CellObject containedObject;
 }
 
 public class BoardManager : MonoBehaviour
@@ -13,19 +13,17 @@ public class BoardManager : MonoBehaviour
     [Header("Player")]
     [SerializeField] private PlayerController player;
 
-    [Header("Prefabs")]
+    [Header("Food")]
+    [SerializeField] private int minFood;
+    [SerializeField] private int maxFood;
     [SerializeField] private List<GameObject> foodPrefabs;
 
-    [Header("Tile Infos")]
+    [Header("Tile")]
     [SerializeField] private int tileWidth;
     [SerializeField] private int tileHeight;
     [SerializeField] private Tile[] groundTiles;
     [SerializeField] private Tile[] wallTiles;
     
-    [Header("Settings")]
-    [SerializeField] private int minFood;
-    [SerializeField] private int maxFood;
-
     private Grid _grid;
     private Tilemap _tilemap;
     private CellData[,] _boardData;
@@ -95,13 +93,14 @@ public class BoardManager : MonoBehaviour
             int randomCell = Random.Range(0, _emptyCellList.Count);
             Vector2Int coord = _emptyCellList[randomCell];
             CellData data = _boardData[coord.x, coord.y];
-            _emptyCellList.RemoveAt(randomCell); // remove from the list, the cell isn't empty anymore
 
             // Choose a random food sprite
             int randomFood = Random.Range(0, foodPrefabs.Count);
             GameObject newFood = Instantiate(foodPrefabs[randomFood]);
             newFood.transform.position = CellToWorld(coord);
-            data.containedObject = newFood;
+
+            data.containedObject = newFood.AddComponent<FoodObject>();
+            _emptyCellList.RemoveAt(randomCell); // remove from the list, the cell isn't empty anymore
         }
     }
 }
