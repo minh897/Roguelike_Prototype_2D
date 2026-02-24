@@ -14,13 +14,17 @@ public class BoardManager : MonoBehaviour
     [SerializeField] private PlayerController player;
 
     [Header("Prefabs")]
-    [SerializeField] private GameObject foodPrefab;
+    [SerializeField] private List<GameObject> foodPrefabs;
 
     [Header("Tile Infos")]
     [SerializeField] private int tileWidth;
     [SerializeField] private int tileHeight;
     [SerializeField] private Tile[] groundTiles;
     [SerializeField] private Tile[] wallTiles;
+    
+    [Header("Settings")]
+    [SerializeField] private int minFood;
+    [SerializeField] private int maxFood;
 
     private Grid _grid;
     private Tilemap _tilemap;
@@ -84,17 +88,20 @@ public class BoardManager : MonoBehaviour
 
     void GenerateFood()
     {
-        int foodCount = 5;
+        int foodCount = Random.Range(minFood, maxFood);
         for (int i = 0; i < foodCount; ++i)
         {
-            int randomIndex = Random.Range(0, _emptyCellList.Count);
-            Vector2Int coord = _emptyCellList[randomIndex];
+            // Choose a random empty cell
+            int randomCell = Random.Range(0, _emptyCellList.Count);
+            Vector2Int coord = _emptyCellList[randomCell];
             CellData data = _boardData[coord.x, coord.y];
-            GameObject newFood = Instantiate(foodPrefab);
+            _emptyCellList.RemoveAt(randomCell); // remove from the list, the cell isn't empty anymore
+
+            // Choose a random food sprite
+            int randomFood = Random.Range(0, foodPrefabs.Count);
+            GameObject newFood = Instantiate(foodPrefabs[randomFood]);
             newFood.transform.position = CellToWorld(coord);
             data.containedObject = newFood;
-            // remove from the list because the cell is not empty anymore
-            _emptyCellList.RemoveAt(randomIndex); 
         }
     }
 }

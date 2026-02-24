@@ -178,6 +178,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BoardManager
   player: {fileID: 57897066}
+  foodPrefabs:
+  - {fileID: 5678318517024281636, guid: 605a70bddb0ff851b9c5ed6f9258b086, type: 3}
+  - {fileID: 698299788809881785, guid: 66821ed1c5748608190b9694b502ce3f, type: 3}
+  - {fileID: 6559209384104243049, guid: 83e406d184ca9fe368626577c3611462, type: 3}
   tileWidth: 8
   tileHeight: 8
   groundTiles:
@@ -191,6 +195,8 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 5ebcad495a3636523a73f3db38122b11, type: 2}
   wallTiles:
   - {fileID: 11400000, guid: 395ec014dee7a0f178780d9e2739d406, type: 2}
+  minFood: 3
+  maxFood: 10
 --- !u!1 &57897065
 GameObject:
   m_ObjectHideFlags: 0
