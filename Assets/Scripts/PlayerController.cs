@@ -57,13 +57,15 @@ public class PlayerController : MonoBehaviour
             CellData cellData = _board.GetCellData(newCellTarget);
             if (cellData != null && cellData.passable)
             {
-                GameManager.Instance.TurnManager.Tick();
+                _hasMoved = false;
                 MoveTo(newCellTarget);
+                // Player moves to a cell contains a food object
                 if (cellData.containedObject != null)
                 {
                     cellData.containedObject.PlayerEntered();
+                    return; // stop ticking, prevent food loss from OnTick system
                 }
-                _hasMoved = false;
+                GameManager.Instance.TurnManager.Tick();
             }
         }
     }
@@ -79,5 +81,10 @@ public class PlayerController : MonoBehaviour
     {
         _cellPosition = cell;
         transform.position = _board.CellToWorld(_cellPosition);
+    }
+
+    public Vector2Int GetCellPosition()
+    {
+        return _cellPosition;
     }
 }

@@ -47,9 +47,14 @@ public class GameManager : MonoBehaviour
         _labelFoodAmount.text = foodAmount.ToString();
     }
 
+    public void ChangeFood(int amount)
+    {
+        foodAmount += amount;
+        _labelFoodAmount.text = foodAmount.ToString();
+    }
+
     private void OnTurnHappen()
     {
-        foodAmount -= 1;
-        _labelFoodAmount.text = foodAmount.ToString();
+        ChangeFood(-1);
     }
 }

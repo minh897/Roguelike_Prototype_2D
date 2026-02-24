@@ -99,7 +99,7 @@ public class BoardManager : MonoBehaviour
             GameObject newFood = Instantiate(foodPrefabs[randomFood]);
             newFood.transform.position = CellToWorld(coord);
 
-            data.containedObject = newFood.AddComponent<FoodObject>();
+            data.containedObject = newFood.GetComponent<FoodObject>();
             _emptyCellList.RemoveAt(randomCell); // remove from the list, the cell isn't empty anymore
         }
     }
