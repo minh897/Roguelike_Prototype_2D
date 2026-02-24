@@ -36,7 +36,7 @@ public class GameManager : MonoBehaviour
 
     void OnDisable()
     {
-        TurnManager.OnTick += OnTurnHappen;
+        TurnManager.OnTick -= OnTurnHappen;
     }
 
     void Start()
