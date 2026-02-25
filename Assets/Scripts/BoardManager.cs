@@ -10,7 +10,6 @@ public class CellData
 
 public class BoardManager : MonoBehaviour
 {
-
     [Header("Player")]
     [SerializeField] private PlayerController player;
 
@@ -24,7 +23,7 @@ public class BoardManager : MonoBehaviour
     [SerializeField] private int maxWall = 10;
     [SerializeField] private WallObject wallPrefab;
 
-    [Header("Tile")]
+    [Header("Board")]
     [SerializeField] private int tileWidth;
     [SerializeField] private int tileHeight;
     [SerializeField] private Tile[] groundTiles;
@@ -35,13 +34,16 @@ public class BoardManager : MonoBehaviour
     private CellData[,] _boardData;
     private List<Vector2Int> _emptyCellList;
 
+#region UNITY
     void Awake()
     {
         _grid = GetComponentInChildren<Grid>();
         _tilemap = GetComponentInChildren<Tilemap>();
         _emptyCellList = new();
     }
+#endregion
 
+#region PUBLIC
     public void Init()
     {
         // Generate a new game board
@@ -75,7 +77,7 @@ public class BoardManager : MonoBehaviour
         GenerateWall();
         GenerateFood();
     }
-#region PUBLIC
+
     public Vector3 CellToWorld(Vector2Int cellIndex)
     {
         return _grid.GetCellCenterWorld((Vector3Int)cellIndex);
@@ -95,6 +97,11 @@ public class BoardManager : MonoBehaviour
     public void SetCellTile(Vector2Int cellIndex, Tile tile)
     {
         _tilemap.SetTile(new Vector3Int(cellIndex.x, cellIndex.y, 0), tile);
+    }
+
+    public Tile GetCellTile(Vector2Int cellIndex)
+    {
+        return _tilemap.GetTile<Tile>(new(cellIndex.x, cellIndex.y, 0));
     }
 #endregion
 
