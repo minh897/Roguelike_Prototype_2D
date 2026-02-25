@@ -10,7 +10,6 @@ public class CellData
 
 public class BoardManager : MonoBehaviour
 {
-    [SerializeField] private WallObject wallPrefab;
 
     [Header("Player")]
     [SerializeField] private PlayerController player;
@@ -19,6 +18,11 @@ public class BoardManager : MonoBehaviour
     [SerializeField] private int minFood;
     [SerializeField] private int maxFood;
     [SerializeField] private List<GameObject> foodPrefabs;
+
+    [Header("Wall")]
+    [SerializeField] private int minWall = 6;
+    [SerializeField] private int maxWall = 10;
+    [SerializeField] private WallObject wallPrefab;
 
     [Header("Tile")]
     [SerializeField] private int tileWidth;
@@ -71,7 +75,7 @@ public class BoardManager : MonoBehaviour
         GenerateWall();
         GenerateFood();
     }
-
+#region PUBLIC
     public Vector3 CellToWorld(Vector2Int cellIndex)
     {
         return _grid.GetCellCenterWorld((Vector3Int)cellIndex);
@@ -92,41 +96,43 @@ public class BoardManager : MonoBehaviour
     {
         _tilemap.SetTile(new Vector3Int(cellIndex.x, cellIndex.y, 0), tile);
     }
+#endregion
+
+#region PRIVATE
+
+    private void AddObject(CellObject obj, Vector2Int coord)
+    {
+        CellData data = _boardData[coord.x, coord.y];
+        obj.transform.position = CellToWorld(coord);
+        data.containedObject = obj;
+        obj.Init(coord);
+    }
 
     private void GenerateFood()
     {
         int foodCount = Random.Range(minFood, maxFood);
         for (int i = 0; i < foodCount; ++i)
         {
-            // Choose a random empty cell
-            int randomCell = Random.Range(0, _emptyCellList.Count);
-            Vector2Int coord = _emptyCellList[randomCell];
-            CellData data = _boardData[coord.x, coord.y];
-
-            // Choose a random food sprite
-            int randomFood = Random.Range(0, foodPrefabs.Count);
-            GameObject newFood = Instantiate(foodPrefabs[randomFood]);
-            newFood.transform.position = CellToWorld(coord);
-
-            data.containedObject = newFood.GetComponent<FoodObject>();
-            _emptyCellList.RemoveAt(randomCell); // remove from the list, the cell isn't empty anymore
+            int cellIndex = Random.Range(0, _emptyCellList.Count); // choose a random empty cell
+            int spriteIndex = Random.Range(0, foodPrefabs.Count); // choose a random food sprite
+            Vector2Int coord = _emptyCellList[cellIndex];
+            FoodObject newFood = Instantiate(foodPrefabs[spriteIndex].GetComponent<FoodObject>());
+            _emptyCellList.RemoveAt(cellIndex); // remove from the list, the cell isn't empty anymore
+            AddObject(newFood, coord);
         }
     }
 
     private void GenerateWall()
     {
-        int wallCount = Random.Range(6, 10);
+        int wallCount = Random.Range(minWall, maxWall);
         for (int i = 0; i < wallCount; ++i)
         {
-            int randomIndex = Random.Range(0, _emptyCellList.Count);
-            Vector2Int coord = _emptyCellList[randomIndex];
-            CellData data = _boardData[coord.x, coord.y];
+            int cellIndex = Random.Range(0, _emptyCellList.Count);
+            Vector2Int coord = _emptyCellList[cellIndex];
             WallObject newWall = Instantiate(wallPrefab);
-
-            newWall.Init(coord);
-            newWall.transform.position = CellToWorld(coord);
-            data.containedObject = newWall;
-            _emptyCellList.RemoveAt(randomIndex);
+            _emptyCellList.RemoveAt(cellIndex);
+            AddObject(newWall, coord);
         }
     }
+#endregion
 }
