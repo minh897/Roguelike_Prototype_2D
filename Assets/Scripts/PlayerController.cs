@@ -57,15 +57,21 @@ public class PlayerController : MonoBehaviour
             CellData cellData = _board.GetCellData(newCellTarget);
             if (cellData != null && cellData.passable)
             {
-                _hasMoved = false;
-                MoveTo(newCellTarget);
-                // Player moves to a cell contains a food object
-                if (cellData.containedObject != null)
-                {
-                    cellData.containedObject.PlayerEntered();
-                    return; // stop ticking, prevent food loss from OnTick system
-                }
                 GameManager.Instance.TurnManager.Tick();
+                
+                // Player can move to a cell that doesn't have a cell object
+                if (cellData.containedObject == null)
+                {
+                    MoveTo(newCellTarget);
+                }
+                // Player checks if the CellObject allows them to enter (wall, barrier, ect.)
+                else if (cellData.containedObject.PlayerWantsToEnter())
+                {
+                    MoveTo(newCellTarget);
+                    cellData.containedObject.PlayerEntered();
+                }
+
+                _hasMoved = false;
             }
         }
     }

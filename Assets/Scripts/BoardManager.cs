@@ -10,6 +10,8 @@ public class CellData
 
 public class BoardManager : MonoBehaviour
 {
+    [SerializeField] private WallObject wallPrefab;
+
     [Header("Player")]
     [SerializeField] private PlayerController player;
 
@@ -62,9 +64,11 @@ public class BoardManager : MonoBehaviour
             }
         }
 
-        // Remove the starting point of the player
+        // Remove the starting point of the player from the list
+        // to prevent wall or food spawning on top of it
         _emptyCellList.Remove(new(1,1));
-        // Randomly distributed food
+
+        GenerateWall();
         GenerateFood();
     }
 
@@ -84,7 +88,12 @@ public class BoardManager : MonoBehaviour
         return _boardData[cellIndex.x, cellIndex.y];
     }
 
-    void GenerateFood()
+    public void SetCellTile(Vector2Int cellIndex, Tile tile)
+    {
+        _tilemap.SetTile(new Vector3Int(cellIndex.x, cellIndex.y, 0), tile);
+    }
+
+    private void GenerateFood()
     {
         int foodCount = Random.Range(minFood, maxFood);
         for (int i = 0; i < foodCount; ++i)
@@ -101,6 +110,23 @@ public class BoardManager : MonoBehaviour
 
             data.containedObject = newFood.GetComponent<FoodObject>();
             _emptyCellList.RemoveAt(randomCell); // remove from the list, the cell isn't empty anymore
+        }
+    }
+
+    private void GenerateWall()
+    {
+        int wallCount = Random.Range(6, 10);
+        for (int i = 0; i < wallCount; ++i)
+        {
+            int randomIndex = Random.Range(0, _emptyCellList.Count);
+            Vector2Int coord = _emptyCellList[randomIndex];
+            CellData data = _boardData[coord.x, coord.y];
+            WallObject newWall = Instantiate(wallPrefab);
+
+            newWall.Init(coord);
+            newWall.transform.position = CellToWorld(coord);
+            data.containedObject = newWall;
+            _emptyCellList.RemoveAt(randomIndex);
         }
     }
 }

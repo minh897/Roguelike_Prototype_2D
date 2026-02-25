@@ -1,5 +1,3 @@
-using UnityEngine;
-
 public class FoodObject : CellObject
 {
     public int foodPoint;

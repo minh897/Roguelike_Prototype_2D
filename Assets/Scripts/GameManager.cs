@@ -47,6 +47,8 @@ public class GameManager : MonoBehaviour
         _labelFoodAmount.text = foodAmount.ToString();
     }
 
+    public BoardManager GetBoard() => board;
+
     public void ChangeFood(int amount)
     {
         foodAmount += amount;
