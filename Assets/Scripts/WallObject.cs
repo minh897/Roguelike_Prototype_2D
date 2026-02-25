@@ -5,6 +5,7 @@ public class WallObject : CellObject
 {
     public int maxHealth;
     public Tile obstacleTile;
+    public Tile damagedTile;
 
     private int _healthPoint;
     private Tile _originalTile;
@@ -25,6 +26,10 @@ public class WallObject : CellObject
     {
         _healthPoint -= 1;
         
+        if (_healthPoint == 1)
+        {
+            GameManager.Instance.GetBoard().SetCellTile(_cell, damagedTile);
+        }
         if (_healthPoint > 0)
         {
             return false;

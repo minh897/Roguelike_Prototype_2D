@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 2888484742224015949}
   - component: {fileID: 4019296210480526955}
   m_Layer: 0
-  m_Name: Wall
+  m_Name: Wall_2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -44,5 +44,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a2ac8a293c3e0bbbd8621b2229acda7b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::WallObject
-  obstacleTile: {fileID: 11400000, guid: 2d4fc04d134f28432b15092c8e5c632a, type: 2}
   maxHealth: 3
+  obstacleTile: {fileID: 11400000, guid: 395ec014dee7a0f178780d9e2739d406, type: 2}
+  damagedTile: {fileID: 11400000, guid: 1ac00e817ded430d3b3356f600e6e7ff, type: 2}

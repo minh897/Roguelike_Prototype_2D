@@ -19,9 +19,9 @@ public class BoardManager : MonoBehaviour
     [SerializeField] private List<GameObject> foodPrefabs;
 
     [Header("Wall")]
-    [SerializeField] private int minWall = 6;
-    [SerializeField] private int maxWall = 10;
-    [SerializeField] private WallObject wallPrefab;
+    [SerializeField] private int minWall;
+    [SerializeField] private int maxWall;
+    [SerializeField] private List<WallObject> wallPrefabs;
 
     [Header("Board")]
     [SerializeField] private int tileWidth;
@@ -135,8 +135,9 @@ public class BoardManager : MonoBehaviour
         for (int i = 0; i < wallCount; ++i)
         {
             int cellIndex = Random.Range(0, _emptyCellList.Count);
+            int spriteIndex = Random.Range(0, wallPrefabs.Count);
             Vector2Int coord = _emptyCellList[cellIndex];
-            WallObject newWall = Instantiate(wallPrefab);
+            WallObject newWall = Instantiate(wallPrefabs[spriteIndex]);
             _emptyCellList.RemoveAt(cellIndex);
             AddObject(newWall, coord);
         }
