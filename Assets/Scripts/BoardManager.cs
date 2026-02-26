@@ -16,15 +16,15 @@ public class BoardManager : MonoBehaviour
     [Header("Food")]
     [SerializeField] private int minFood;
     [SerializeField] private int maxFood;
-    [SerializeField] private List<GameObject> foodPrefabs;
+    [SerializeField] private List<FoodObject> foodPrefabs;
 
     [Header("Wall")]
     [SerializeField] private int minWall;
     [SerializeField] private int maxWall;
-    [SerializeField] private List<WallObject> wallPrefabs;
+    [SerializeField] private List<ObstacleObject> obstaclePrefabs;
 
     [Header("Exit")]
-    [SerializeField] private ExitCellObject exitPrefab;
+    [SerializeField] private ExitObject exitCellPrefab;
 
     [Header("Board")]
     [SerializeField] private int width;
@@ -78,8 +78,8 @@ public class BoardManager : MonoBehaviour
         _emptyCellList.Remove(new(1,1));
 
         GenerateExit();
-        GenerateWall();
-        GenerateFood();
+        GenerateRandomly(obstaclePrefabs, minWall, maxWall);
+        GenerateRandomly(foodPrefabs, minFood, maxFood);
     }
 
     public Vector3 CellToWorld(Vector2Int cellIndex)
@@ -137,7 +137,6 @@ public class BoardManager : MonoBehaviour
 #endregion
 
 #region PRIVATE
-
     private void AddObject(CellObject obj, Vector2Int coord)
     {
         CellData data = _boardData[coord.x, coord.y];
@@ -146,41 +145,31 @@ public class BoardManager : MonoBehaviour
         obj.Init(coord);
     }
 
-    private void GenerateFood()
+    private void GenerateRandomly(IReadOnlyList<CellObject> prefabList, int min, int max)
     {
-        int foodCount = Random.Range(minFood, maxFood);
-        for (int i = 0; i < foodCount; ++i)
-        {
-            int cellIndex = Random.Range(0, _emptyCellList.Count); // choose a random empty cell
-            int spriteIndex = Random.Range(0, foodPrefabs.Count); // choose a random food sprite
-            Vector2Int coord = _emptyCellList[cellIndex];
-            FoodObject newFood = Instantiate(foodPrefabs[spriteIndex].GetComponent<FoodObject>());
-            AddObject(newFood, coord);
-            _emptyCellList.RemoveAt(cellIndex); // remove from the list, the cell isn't empty anymore
-        }
-    }
-
-    private void GenerateWall()
-    {
-        int wallCount = Random.Range(minWall, maxWall);
-        for (int i = 0; i < wallCount; ++i)
+        int count = Random.Range(min, max);
+        for (int i = 0; i < count; i++)
         {
             int cellIndex = Random.Range(0, _emptyCellList.Count);
-            int spriteIndex = Random.Range(0, wallPrefabs.Count);
-            Vector2Int coord = _emptyCellList[cellIndex];
-            WallObject newWall = Instantiate(wallPrefabs[spriteIndex]);
-            AddObject(newWall, coord);
-            _emptyCellList.RemoveAt(cellIndex);
+            int prefabIndex = Random.Range(0, prefabList.Count);
+            CreateCellObject(_emptyCellList[cellIndex], prefabList[prefabIndex]);
         }
     }
 
     private void GenerateExit()
     {
-        // the exit tile is placed in the upper-right corner of the tilemap
-        Vector2Int endCoord = new(width - 2, height - 2);
-        ExitCellObject exitCell = Instantiate(exitPrefab);
-        AddObject(exitCell, endCoord);
-        _emptyCellList.Remove(endCoord);
+        // Gameplay rule: the exit cell will always be placed at the 
+        // most upper-right corner of the game board 2 tiles in
+        Vector2Int coord = new(width - 2, height - 2);
+        CreateCellObject(coord, exitCellPrefab);
+    }
+
+    private void CreateCellObject(Vector2Int cellCoord, CellObject cellObject)
+    {
+        Vector2Int coord = cellCoord;
+        CellObject cell  = Instantiate(cellObject);
+        AddObject(cell, coord);
+        _emptyCellList.Remove(coord); // remove from the list, the cell isn't empty anymore
     }
 #endregion
 }

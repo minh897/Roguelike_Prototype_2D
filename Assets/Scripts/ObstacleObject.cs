@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
-public class WallObject : CellObject
+public class ObstacleObject : CellObject
 {
     public int maxHealth;
     public Tile obstacleTile;
@@ -19,7 +19,7 @@ public class WallObject : CellObject
         // cache the ground tile from the board as orignal tile 
         // before setting the current cell with an obstacle tile
         _originalTile = GameManager.Instance.GetBoard().GetCellTile(cell);
-        GameManager.Instance.GetBoard().SetCellTile(cell, obstacleTile);
+        // GameManager.Instance.GetBoard().SetCellTile(cell, obstacleTile);
     }
 
     public override bool PlayerWantsToEnter()
