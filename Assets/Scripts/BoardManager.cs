@@ -23,6 +23,9 @@ public class BoardManager : MonoBehaviour
     [SerializeField] private int maxWall;
     [SerializeField] private List<WallObject> wallPrefabs;
 
+    [Header("Exit")]
+    [SerializeField] private ExitCellObject exitPrefab;
+
     [Header("Board")]
     [SerializeField] private int tileWidth;
     [SerializeField] private int tileHeight;
@@ -74,6 +77,7 @@ public class BoardManager : MonoBehaviour
         // to prevent wall or food spawning on top of it
         _emptyCellList.Remove(new(1,1));
 
+        GenerateExit();
         GenerateWall();
         GenerateFood();
     }
@@ -124,8 +128,8 @@ public class BoardManager : MonoBehaviour
             int spriteIndex = Random.Range(0, foodPrefabs.Count); // choose a random food sprite
             Vector2Int coord = _emptyCellList[cellIndex];
             FoodObject newFood = Instantiate(foodPrefabs[spriteIndex].GetComponent<FoodObject>());
-            _emptyCellList.RemoveAt(cellIndex); // remove from the list, the cell isn't empty anymore
             AddObject(newFood, coord);
+            _emptyCellList.RemoveAt(cellIndex); // remove from the list, the cell isn't empty anymore
         }
     }
 
@@ -138,9 +142,18 @@ public class BoardManager : MonoBehaviour
             int spriteIndex = Random.Range(0, wallPrefabs.Count);
             Vector2Int coord = _emptyCellList[cellIndex];
             WallObject newWall = Instantiate(wallPrefabs[spriteIndex]);
-            _emptyCellList.RemoveAt(cellIndex);
             AddObject(newWall, coord);
+            _emptyCellList.RemoveAt(cellIndex);
         }
+    }
+
+    private void GenerateExit()
+    {
+        // the exit tile is placed in the upper-right corner of the tilemap
+        Vector2Int endCoord = new(tileWidth - 2, tileHeight - 2);
+        ExitCellObject exitCell = Instantiate(exitPrefab);
+        AddObject(exitCell, endCoord);
+        _emptyCellList.Remove(endCoord);
     }
 #endregion
 }
