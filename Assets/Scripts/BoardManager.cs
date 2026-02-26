@@ -27,8 +27,8 @@ public class BoardManager : MonoBehaviour
     [SerializeField] private ExitCellObject exitPrefab;
 
     [Header("Board")]
-    [SerializeField] private int tileWidth;
-    [SerializeField] private int tileHeight;
+    [SerializeField] private int width;
+    [SerializeField] private int height;
     [SerializeField] private Tile[] groundTiles;
     [SerializeField] private Tile[] wallTiles;
     
@@ -50,14 +50,14 @@ public class BoardManager : MonoBehaviour
     public void Init()
     {
         // Generate a new game board
-        _boardData = new CellData[tileWidth, tileHeight];
-        for (int y = 0; y < tileHeight; y++)
+        _boardData = new CellData[width, height];
+        for (int y = 0; y < height; y++)
         {
-            for (int x = 0; x < tileWidth; x++)
+            for (int x = 0; x < width; x++)
             {
                 Tile tile;
                 _boardData[x, y] = new();
-                if (x == 0 || y == 0 || x == tileWidth - 1 || y == tileHeight - 1)
+                if (x == 0 || y == 0 || x == width - 1 || y == height - 1)
                 {
                     tile = wallTiles[Random.Range(0, wallTiles.Length)];
                     _boardData[x, y].passable = false;
@@ -89,8 +89,8 @@ public class BoardManager : MonoBehaviour
 
     public CellData GetCellData(Vector2Int cellIndex)
     {
-        if (cellIndex.x < 0 || cellIndex.x >= tileWidth
-            || cellIndex.y < 0 || cellIndex.y >= tileHeight)
+        if (cellIndex.x < 0 || cellIndex.x >= width
+            || cellIndex.y < 0 || cellIndex.y >= height)
         {
             return null;
         }
@@ -106,6 +106,33 @@ public class BoardManager : MonoBehaviour
     public Tile GetCellTile(Vector2Int cellIndex)
     {
         return _tilemap.GetTile<Tile>(new(cellIndex.x, cellIndex.y, 0));
+    }
+
+    [ContextMenu("Clean Board")]
+    public void CleanBoard()
+    {
+        // First time initializing the game board
+        if (_boardData == null)
+        {
+            return;
+        }
+        
+        for (int x = 0; x < width; x++)
+        {
+            for (int y = 0; y < height; y++)
+            {
+                var cellContainedObj = _boardData[x, y].containedObject;
+                if (cellContainedObj != null)
+                {
+                    Destroy(cellContainedObj.gameObject);
+                }
+
+                Vector3Int position = new(x, y, 0);
+                _tilemap.SetTile(position, null);
+                _boardData[x, y] = new();
+            }
+        }
+        _emptyCellList = new();
     }
 #endregion
 
@@ -150,7 +177,7 @@ public class BoardManager : MonoBehaviour
     private void GenerateExit()
     {
         // the exit tile is placed in the upper-right corner of the tilemap
-        Vector2Int endCoord = new(tileWidth - 2, tileHeight - 2);
+        Vector2Int endCoord = new(width - 2, height - 2);
         ExitCellObject exitCell = Instantiate(exitPrefab);
         AddObject(exitCell, endCoord);
         _emptyCellList.Remove(endCoord);

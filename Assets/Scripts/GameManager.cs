@@ -10,9 +10,11 @@ public class GameManager : MonoBehaviour
     [SerializeField] private BoardManager board;
     [SerializeField] private PlayerController player;
     [SerializeField] private int foodAmount;
+    [SerializeField] private Vector2Int playerInitialPos;
 
     private Label _labelFoodAmount;
 
+#region UNITY
     void Awake()
     {
         // Make sure there is only one instance of this class exist
@@ -41,12 +43,13 @@ public class GameManager : MonoBehaviour
 
     void Start()
     {
-        board.Init();
-        player.Spawn(board, new Vector2Int(1, 1));
+        NewLevel();
 
         _labelFoodAmount.text = foodAmount.ToString();
     }
+#endregion
 
+#region PUBLIC
     public BoardManager GetBoard() => board;
 
     public void ChangeFood(int amount)
@@ -55,8 +58,19 @@ public class GameManager : MonoBehaviour
         _labelFoodAmount.text = foodAmount.ToString();
     }
 
+    [ContextMenu("New Level")]
+    public void NewLevel()
+    {
+        board.CleanBoard();
+        board.Init();
+        player.Spawn(board, playerInitialPos);
+    }
+#endregion
+
+#region PRIVATE
     private void OnTurnHappen()
     {
         ChangeFood(-1);
     }
+#endregion
 }

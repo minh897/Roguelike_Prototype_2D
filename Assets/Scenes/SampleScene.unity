@@ -189,8 +189,9 @@ MonoBehaviour:
   wallPrefabs:
   - {fileID: 4019296210480526955, guid: 547298110e0ba704bafaaf4c208f7ce3, type: 3}
   - {fileID: 4019296210480526955, guid: 8728461eb45c76b6c9cb7c8633815ea3, type: 3}
-  tileWidth: 8
-  tileHeight: 8
+  exitPrefab: {fileID: 2066619562052579580, guid: 2e8d2096fe01dd67d9b72b2f400e55af, type: 3}
+  width: 8
+  height: 8
   groundTiles:
   - {fileID: 11400000, guid: 9eee402d34043db3eba58ee7e676f81c, type: 2}
   - {fileID: 11400000, guid: db27a9022570d5ce0b707f6e7e08fa87, type: 2}
