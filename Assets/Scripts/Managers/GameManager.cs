@@ -9,14 +9,15 @@ public class GameManager : MonoBehaviour
     [SerializeField] private UIDocument uiDoc; 
     [SerializeField] private BoardManager board;
     [SerializeField] private PlayerController player;
-    [SerializeField] private int foodAmount;
     [SerializeField] private Vector2Int playerInitialPos;
-
-    private int _currentLevel;
+    [SerializeField] private int startFoodAmount;
 
     private Label _labelFoodAmount;
     private Label _gameOverMessage;
     private VisualElement _gameOverPanel;
+
+    private int _currentLevel;
+    private int _foodAmount;
 
 #region UNITY
     void Awake()
@@ -34,8 +35,6 @@ public class GameManager : MonoBehaviour
         _labelFoodAmount = uiDoc.rootVisualElement.Q<Label>("FoodAmount");
         _gameOverPanel = uiDoc.rootVisualElement.Q<VisualElement>("GameOverPanel");
         _gameOverMessage = _gameOverPanel.Q<Label>("GameOverMessage");
-
-        _gameOverPanel.style.visibility = Visibility.Hidden;
     }
 
     void OnEnable()
@@ -50,9 +49,7 @@ public class GameManager : MonoBehaviour
 
     void Start()
     {
-        NewLevel();
-
-        _labelFoodAmount.text = foodAmount.ToString();
+        StartNewGame();
     }
 #endregion
 
@@ -61,11 +58,13 @@ public class GameManager : MonoBehaviour
 
     public void ChangeFood(int amount)
     {
-        foodAmount += amount;
-        _labelFoodAmount.text = foodAmount.ToString();
+        _foodAmount += amount;
+        _labelFoodAmount.text = _foodAmount.ToString();
 
-        if (foodAmount <= 0)
+        // Game over condition
+        if (_foodAmount <= 0)
         {
+            player.SetGameOver();
             _gameOverPanel.style.visibility = Visibility.Visible;
             _gameOverMessage.text = "Game Over!\n\nYou traveled through\n" + _currentLevel + " levels";
         }
@@ -77,6 +76,22 @@ public class GameManager : MonoBehaviour
         _currentLevel++;
         board.CleanBoard();
         board.Init();
+        player.Spawn(board, playerInitialPos);
+    }
+
+    public void StartNewGame()
+    {
+        _gameOverPanel.style.visibility = Visibility.Hidden;
+
+        // Gameplay rule: always start over at level 1
+        _currentLevel = 1; 
+        _foodAmount = startFoodAmount;
+        _labelFoodAmount.text = _foodAmount.ToString();
+
+        board.CleanBoard();
+        board.Init();
+
+        player.Init();
         player.Spawn(board, playerInitialPos);
     }
 #endregion

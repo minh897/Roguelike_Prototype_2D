@@ -9,14 +9,17 @@ public class PlayerController : MonoBehaviour
 
     private PlayerInputActions _inputActions;
     private InputAction _moveAction;
+    private InputAction _restartAction;
     private Vector2Int _direction;
 
     private bool _hasMoved = false;
+    private bool _isGameOver = false;
 
     void Awake()
     {
         _inputActions = new();
         _moveAction = _inputActions.Player.Move;
+        _restartAction = _inputActions.Player.Interact;
     }
 
     void OnEnable()
@@ -33,14 +36,17 @@ public class PlayerController : MonoBehaviour
         _inputActions.Player.Disable();
     }
 
-    private void OnMove(InputAction.CallbackContext context)
-    {
-        var input = context.ReadValue<Vector2>();
-        _direction = new((int)input.x, (int)input.y);
-    }
-
     void Update()
     {
+        if (_isGameOver)
+        {
+            if (_restartAction.WasPressedThisFrame())
+            {
+                GameManager.Instance.StartNewGame();
+            }
+            return;
+        }
+
         Vector2Int newCellTarget = _cellPosition;
 
         // Only set direction for a new target cell once per input
@@ -76,6 +82,16 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    public void Init()
+    {
+        _isGameOver = false;
+    }
+
+    public void SetGameOver()
+    {
+        _isGameOver = true;
+    }
+
     // Spawn player character on game board
     public void Spawn(BoardManager boardManager, Vector2Int cell)
     {
@@ -93,4 +109,11 @@ public class PlayerController : MonoBehaviour
     {
         return _cellPosition;
     }
+
+    private void OnMove(InputAction.CallbackContext context)
+    {
+        var input = context.ReadValue<Vector2>();
+        _direction = new((int)input.x, (int)input.y);
+    }
+
 }

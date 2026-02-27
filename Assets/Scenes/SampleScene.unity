@@ -232,6 +232,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b3db36555ef8d5223899c52c081226b5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: '::'
+  isGameOver: 0
 --- !u!212 &57897067
 SpriteRenderer:
   serializedVersion: 2
@@ -741,8 +742,8 @@ MonoBehaviour:
   uiDoc: {fileID: 572908319}
   board: {fileID: 8265245}
   player: {fileID: 57897066}
-  foodAmount: 5
   playerInitialPos: {x: 1, y: 1}
+  startFoodAmount: 10
 --- !u!4 &1257766107
 Transform:
   m_ObjectHideFlags: 0
