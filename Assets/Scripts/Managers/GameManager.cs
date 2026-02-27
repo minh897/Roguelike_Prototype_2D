@@ -12,7 +12,11 @@ public class GameManager : MonoBehaviour
     [SerializeField] private int foodAmount;
     [SerializeField] private Vector2Int playerInitialPos;
 
+    private int _currentLevel;
+
     private Label _labelFoodAmount;
+    private Label _gameOverMessage;
+    private VisualElement _gameOverPanel;
 
 #region UNITY
     void Awake()
@@ -27,8 +31,11 @@ public class GameManager : MonoBehaviour
 
         TurnManager = new();
         
-        // Find the label with the name FoodAmount within the root of UIDocument
         _labelFoodAmount = uiDoc.rootVisualElement.Q<Label>("FoodAmount");
+        _gameOverPanel = uiDoc.rootVisualElement.Q<VisualElement>("GameOverPanel");
+        _gameOverMessage = _gameOverPanel.Q<Label>("GameOverMessage");
+
+        _gameOverPanel.style.visibility = Visibility.Hidden;
     }
 
     void OnEnable()
@@ -56,11 +63,18 @@ public class GameManager : MonoBehaviour
     {
         foodAmount += amount;
         _labelFoodAmount.text = foodAmount.ToString();
+
+        if (foodAmount <= 0)
+        {
+            _gameOverPanel.style.visibility = Visibility.Visible;
+            _gameOverMessage.text = "Game Over!\n\nYou traveled through\n" + _currentLevel + " levels";
+        }
     }
 
     [ContextMenu("New Level")]
     public void NewLevel()
     {
+        _currentLevel++;
         board.CleanBoard();
         board.Init();
         player.Spawn(board, playerInitialPos);

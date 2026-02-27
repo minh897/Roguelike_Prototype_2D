@@ -180,16 +180,15 @@ MonoBehaviour:
   player: {fileID: 57897066}
   minFood: 3
   maxFood: 10
-  foodPrefabs:
+  foods:
   - {fileID: 8483130659163680341, guid: 605a70bddb0ff851b9c5ed6f9258b086, type: 3}
   - {fileID: -5063465897376846947, guid: 66821ed1c5748608190b9694b502ce3f, type: 3}
   - {fileID: 5183589808877438489, guid: 83e406d184ca9fe368626577c3611462, type: 3}
   minWall: 6
   maxWall: 10
-  wallPrefabs:
+  obstacles:
   - {fileID: 4019296210480526955, guid: 547298110e0ba704bafaaf4c208f7ce3, type: 3}
-  exitCellPrefab: {fileID: 2066619562052579580, guid: 2e8d2096fe01dd67d9b72b2f400e55af, type: 3}
-  exitCoord: {x: 6, y: 6}
+  exitPoint: {fileID: 2066619562052579580, guid: 2e8d2096fe01dd67d9b72b2f400e55af, type: 3}
   width: 8
   height: 8
   groundTiles:
@@ -742,7 +741,7 @@ MonoBehaviour:
   uiDoc: {fileID: 572908319}
   board: {fileID: 8265245}
   player: {fileID: 57897066}
-  foodAmount: 100
+  foodAmount: 5
   playerInitialPos: {x: 1, y: 1}
 --- !u!4 &1257766107
 Transform:

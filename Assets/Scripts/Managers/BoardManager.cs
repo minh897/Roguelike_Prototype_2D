@@ -16,15 +16,15 @@ public class BoardManager : MonoBehaviour
     [Header("Food")]
     [SerializeField] private int minFood;
     [SerializeField] private int maxFood;
-    [SerializeField] private List<FoodObject> foodPrefabs;
+    [SerializeField] private List<FoodObject> foods;
 
     [Header("Wall")]
     [SerializeField] private int minWall;
     [SerializeField] private int maxWall;
-    [SerializeField] private List<ObstacleObject> obstaclePrefabs;
+    [SerializeField] private List<ObstacleObject> obstacles;
 
     [Header("Exit")]
-    [SerializeField] private ExitObject exitCellPrefab;
+    [SerializeField] private ExitObject exitPoint;
 
     [Header("Board")]
     [SerializeField] private int width;
@@ -78,8 +78,8 @@ public class BoardManager : MonoBehaviour
         _emptyCellList.Remove(new(1,1));
 
         GenerateExit();
-        GenerateRandomly(obstaclePrefabs, minWall, maxWall);
-        GenerateRandomly(foodPrefabs, minFood, maxFood);
+        GenerateRandomly(obstacles, minWall, maxWall);
+        GenerateRandomly(foods, minFood, maxFood);
     }
 
     public Vector3 CellToWorld(Vector2Int cellIndex)
@@ -129,7 +129,6 @@ public class BoardManager : MonoBehaviour
 
                 Vector3Int position = new(x, y, 0);
                 _tilemap.SetTile(position, null);
-                _boardData[x, y] = new();
             }
         }
         _emptyCellList = new();
@@ -161,7 +160,7 @@ public class BoardManager : MonoBehaviour
         // Gameplay rule: the exit cell will always be placed at the 
         // most upper-right corner of the game board 2 tiles in
         Vector2Int coord = new(width - 2, height - 2);
-        CreateCellObject(coord, exitCellPrefab);
+        CreateCellObject(coord, exitPoint);
     }
 
     private void CreateCellObject(Vector2Int cellCoord, CellObject cellObject)
