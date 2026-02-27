@@ -19,19 +19,19 @@ public class ObstacleObject : CellObject
         // cache the ground tile from the board as orignal tile 
         // before setting the current cell with an obstacle tile
         _originalTile = GameManager.Instance.GetBoard().GetCellTile(cell);
-        // GameManager.Instance.GetBoard().SetCellTile(cell, obstacleTile);
+        GameManager.Instance.GetBoard().SetCellTile(cell, obstacleTile);
     }
 
     public override bool PlayerWantsToEnter()
     {
         _healthPoint -= 1;
         
-        if (_healthPoint == 1)
-        {
-            GameManager.Instance.GetBoard().SetCellTile(_cell, damagedTile);
-        }
         if (_healthPoint > 0)
         {
+            if (_healthPoint == 1)
+            {
+                GameManager.Instance.GetBoard().SetCellTile(_cell, damagedTile);
+            }
             return false;
         }
 
