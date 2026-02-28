@@ -11,8 +11,13 @@ public class PlayerController : MonoBehaviour
     private InputAction _moveAction;
     private InputAction _restartAction;
     private Vector2Int _direction;
+    private Vector3 _moveTarget;
+    public float moveSpeed = 5f;
+
+    private Animator _animator;
 
     private bool _hasMoved = false;
+    private bool _isMoving = false;
     private bool _isGameOver = false;
 
     void Awake()
@@ -20,6 +25,7 @@ public class PlayerController : MonoBehaviour
         _inputActions = new();
         _moveAction = _inputActions.Player.Move;
         _restartAction = _inputActions.Player.Interact;
+        _animator = GetComponent<Animator>();
     }
 
     void OnEnable()
@@ -56,29 +62,42 @@ public class PlayerController : MonoBehaviour
             _hasMoved = true;
         }
 
-        // Check for a passable tile
-        // then move there if it is
+        // Check for a passable tile then move there if it is
         if (_hasMoved)
         {
             CellData cellData = _board.GetCellData(newCellTarget);
             if (cellData != null && cellData.passable)
             {
                 GameManager.Instance.TurnManager.Tick();
-                
                 // Player can move to a cell that doesn't have a cell object
                 if (cellData.containedObject == null)
                 {
-                    MoveTo(newCellTarget);
+                    MoveTo(newCellTarget, false);
                 }
-                // Player checks if the CellObject allows them to enter (wall, barrier, ect.)
+                // Player checks if the CellObject allows them to enter (wall, food, ect.)
                 else if (cellData.containedObject.PlayerWantsToEnter())
                 {
-                    MoveTo(newCellTarget);
+                    MoveTo(newCellTarget, true);
                     cellData.containedObject.PlayerEntered();
                 }
-
-                _hasMoved = false;
             }
+            _hasMoved = false;
+        }
+
+        if (_isMoving)
+        {
+            transform.position = Vector3.MoveTowards(transform.position, _moveTarget, moveSpeed * Time.deltaTime);
+            if (transform.position == _moveTarget)
+            {
+                _isMoving = false;
+                _animator.SetBool("Moving", _isMoving);
+                var cellData = _board.GetCellData(_cellPosition);
+                if (cellData.containedObject != null)
+                {
+                    cellData.containedObject.PlayerEntered();
+                }
+            }
+            return;
         }
     }
 
@@ -96,13 +115,24 @@ public class PlayerController : MonoBehaviour
     public void Spawn(BoardManager boardManager, Vector2Int cell)
     {
         _board = boardManager;
-        MoveTo(cell);
+        MoveTo(cell, false);
     }
 
-    public void MoveTo(Vector2Int cell)
+    public void MoveTo(Vector2Int cell, bool immediate)
     {
         _cellPosition = cell;
-        transform.position = _board.CellToWorld(_cellPosition);
+        // Player move immediately without animation
+        if (immediate)
+        {
+            _isMoving = false;
+            transform.position = _board.CellToWorld(_cellPosition);
+        }
+        else
+        {
+            _isMoving = true;
+            _moveTarget = _board.CellToWorld(_cellPosition);
+        }
+        _animator.SetBool("Moving", _isMoving);
     }
 
     public Vector2Int GetCellPosition()
