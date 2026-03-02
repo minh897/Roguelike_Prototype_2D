@@ -1,4 +1,3 @@
-using UnityEditor.U2D;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
@@ -28,14 +27,13 @@ public class ObstacleObject : CellObject
     public override bool PlayerWantsToEnter()
     {
         _healthPoint -= 1;
-        
+        if (_healthPoint == 1)
+        {
+            // Replace the sprite with the damagedTile sprite
+            sRenderer.sprite = damagedTile.sprite;
+        }
         if (_healthPoint > 0)
         {
-            if (_healthPoint == 1)
-            {
-                // Replace the sprite with the damagedTile sprite
-                sRenderer.sprite = damagedTile.sprite;
-            }
             return false;
         }
 

@@ -1,4 +1,5 @@
 using InputActions;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -18,6 +19,7 @@ public class PlayerController : MonoBehaviour
 
     private bool _hasMoved = false;
     private bool _isMoving = false;
+    public bool _isAttacking = false;
     private bool _isGameOver = false;
 
     void Awake()
@@ -61,27 +63,45 @@ public class PlayerController : MonoBehaviour
             newCellTarget += _direction;
             _hasMoved = true;
         }
-
+        
         // Check for a passable tile then move there if it is
         if (_hasMoved)
         {
             CellData cellData = _board.GetCellData(newCellTarget);
-            if (cellData != null && cellData.passable)
+            if (cellData != null && !cellData.passable)
             {
-                GameManager.Instance.TurnManager.Tick();
-                // Player can move to a cell that doesn't have a cell object
-                if (cellData.containedObject == null)
+                return;
+            }
+            
+            // Player can move to a cell that doesn't have a cell object
+            if (cellData.containedObject == null)
+            {
+                MoveTo(newCellTarget, false);
+            }
+            // Check the condition for the player to occupy a cell containing an object
+            else if (cellData.containedObject != null)
+            {
+                // As of now, only ObstacleObject prevent the player from occupying
+                // Therefor if PlayerWantsToEnter returns false, that cell is containing ObstacleObject
+                if (!cellData.containedObject.PlayerWantsToEnter())
                 {
-                    MoveTo(newCellTarget, false);
+                    _isAttacking = true;
                 }
-                // Player checks if the CellObject allows them to enter (wall, food, ect.)
-                else if (cellData.containedObject.PlayerWantsToEnter())
+                else
                 {
                     MoveTo(newCellTarget, true);
                     cellData.containedObject.PlayerEntered();
                 }
             }
+            
+            GameManager.Instance.TurnManager.Tick();
             _hasMoved = false;
+        }
+
+        if (_isAttacking)
+        {
+            _animator.SetTrigger("Attacking");
+            _isAttacking = false;
         }
 
         if (_isMoving)
@@ -115,7 +135,7 @@ public class PlayerController : MonoBehaviour
     public void Spawn(BoardManager boardManager, Vector2Int cell)
     {
         _board = boardManager;
-        MoveTo(cell, false);
+        MoveTo(cell, true);
     }
 
     public void MoveTo(Vector2Int cell, bool immediate)
