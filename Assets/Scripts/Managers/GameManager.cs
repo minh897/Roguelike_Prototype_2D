@@ -56,6 +56,8 @@ public class GameManager : MonoBehaviour
 #region PUBLIC
     public BoardManager GetBoard() => board;
 
+    public PlayerController GetPlayer() => player;
+
     public void ChangeFood(int amount)
     {
         _foodAmount += amount;
@@ -64,7 +66,7 @@ public class GameManager : MonoBehaviour
         // Game over condition
         if (_foodAmount <= 0)
         {
-            player.SetGameOver();
+            player.EnterGameOverState();
             _gameOverPanel.style.visibility = Visibility.Visible;
             _gameOverMessage.text = "Game Over!\n\nYou traveled through\n" + _currentLevel + " levels";
         }

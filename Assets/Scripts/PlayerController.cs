@@ -17,7 +17,7 @@ public class PlayerController : MonoBehaviour
 
     private Animator _animator;
 
-    private bool _hasMoved = false;
+    private bool _canMove = false;
     private bool _isMoving = false;
     public bool _isAttacking = false;
     private bool _isGameOver = false;
@@ -55,53 +55,32 @@ public class PlayerController : MonoBehaviour
             return;
         }
 
-        Vector2Int newCellTarget = _cellPosition;
+        Vector2Int nextCellTarget = _cellPosition;
 
-        // Only set direction for a new target cell once per input
+        // Check for a passable cell in the moving direction
         if (_moveAction.WasPressedThisFrame() && _moveAction.IsPressed())
         {
-            newCellTarget += _direction;
-            _hasMoved = true;
-        }
-        
-        // Check for a passable tile then move there if it is
-        if (_hasMoved)
-        {
-            CellData cellData = _board.GetCellData(newCellTarget);
-            if (cellData != null && !cellData.passable)
+            nextCellTarget += _direction;
+            var nextCellData = _board.GetCellData(nextCellTarget);
+            if (nextCellData != null && !nextCellData.passable)
             {
                 return;
             }
-            
+
+            var obj = nextCellData.containedObject;
             // Player can move to a cell that doesn't have a cell object
-            if (cellData.containedObject == null)
+            if (obj == null)
             {
-                MoveTo(newCellTarget, false);
+                MoveTo(nextCellTarget, false);
             }
             // Check the condition for the player to occupy a cell containing an object
-            else if (cellData.containedObject != null)
+            else if (obj.PlayerWantsToEnter())
             {
-                // As of now, only ObstacleObject prevent the player from occupying
-                // Therefor if PlayerWantsToEnter returns false, that cell is containing ObstacleObject
-                if (!cellData.containedObject.PlayerWantsToEnter())
-                {
-                    _isAttacking = true;
-                }
-                else
-                {
-                    MoveTo(newCellTarget, true);
-                    cellData.containedObject.PlayerEntered();
-                }
+                MoveTo(nextCellTarget, false);
+                obj.PlayerEntered();
             }
-            
-            GameManager.Instance.TurnManager.Tick();
-            _hasMoved = false;
-        }
 
-        if (_isAttacking)
-        {
-            _animator.SetTrigger("Attacking");
-            _isAttacking = false;
+            GameManager.Instance.TurnManager.Tick();
         }
 
         if (_isMoving)
@@ -110,14 +89,8 @@ public class PlayerController : MonoBehaviour
             if (transform.position == _moveTarget)
             {
                 _isMoving = false;
-                _animator.SetBool("Moving", _isMoving);
-                var cellData = _board.GetCellData(_cellPosition);
-                if (cellData.containedObject != null)
-                {
-                    cellData.containedObject.PlayerEntered();
-                }
+                _animator.SetBool("Moving", false);
             }
-            return;
         }
     }
 
@@ -126,7 +99,7 @@ public class PlayerController : MonoBehaviour
         _isGameOver = false;
     }
 
-    public void SetGameOver()
+    public void EnterGameOverState()
     {
         _isGameOver = true;
     }
@@ -158,6 +131,11 @@ public class PlayerController : MonoBehaviour
     public Vector2Int GetCellPosition()
     {
         return _cellPosition;
+    }
+
+    public void PlayAttack()
+    {
+        _animator.SetTrigger("Attacking");
     }
 
     private void OnMove(InputAction.CallbackContext context)
