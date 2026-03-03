@@ -4,24 +4,21 @@ using UnityEngine.Tilemaps;
 public class ObstacleObject : CellObject
 {
     [SerializeField] private int maxHealth;
-    [SerializeField] private Tile obstacleTile;
     [SerializeField] private Tile damagedTile;
+    // [SerializeField] private Tile obstacleTile;
 
     private int _healthPoint;
-    private Tile _originalTile;
     private SpriteRenderer sRenderer;
+    // private Tile _originalTile;
   
     public override void Init(Vector2Int cell)
     {
         base.Init(cell);
-
-        _healthPoint = maxHealth;
         sRenderer = GetComponent<SpriteRenderer>();
 
+        _healthPoint = maxHealth;
         // cache the ground tile from the board as orignal tile 
-        // before setting the current cell with an obstacle tile
-        _originalTile = GameManager.Instance.GetBoard().GetCellTile(cell);
-        // GameManager.Instance.GetBoard().SetCellTile(cell, obstacleTile);
+        // _originalTile = GameManager.Instance.GetBoard().GetCellTile(cell);
     }
 
     public override bool PlayerWantsToEnter()
@@ -29,7 +26,6 @@ public class ObstacleObject : CellObject
         _healthPoint -= 1;
         if (_healthPoint == 1)
         {
-            // Replace the sprite with the damagedTile sprite
             sRenderer.sprite = damagedTile.sprite;
         }
         if (_healthPoint > 0)
@@ -38,7 +34,7 @@ public class ObstacleObject : CellObject
             return false;
         }
 
-        GameManager.Instance.GetBoard().SetCellTile(_cell, _originalTile);
+        // GameManager.Instance.GetBoard().SetCellTile(_cell, _originalTile);
         Destroy(gameObject);
         return true;
     }

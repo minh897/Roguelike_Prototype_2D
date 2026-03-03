@@ -184,10 +184,14 @@ MonoBehaviour:
   - {fileID: 8483130659163680341, guid: 605a70bddb0ff851b9c5ed6f9258b086, type: 3}
   - {fileID: -5063465897376846947, guid: 66821ed1c5748608190b9694b502ce3f, type: 3}
   - {fileID: 5183589808877438489, guid: 83e406d184ca9fe368626577c3611462, type: 3}
-  minWall: 6
+  minWall: 3
   maxWall: 10
   obstacles:
   - {fileID: 4019296210480526955, guid: 547298110e0ba704bafaaf4c208f7ce3, type: 3}
+  minEnemy: 1
+  maxEnemy: 1
+  enemies:
+  - {fileID: 3521753831852094705, guid: 94ad513b88be4aa60b7b3fa0d9f5af07, type: 3}
   exitPoint: {fileID: 2066619562052579580, guid: 2e8d2096fe01dd67d9b72b2f400e55af, type: 3}
   width: 8
   height: 8
@@ -233,6 +237,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b3db36555ef8d5223899c52c081226b5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: '::'
+  moveSpeed: 5
+  _isAttacking: 0
 --- !u!212 &57897067
 SpriteRenderer:
   serializedVersion: 2
@@ -765,7 +771,7 @@ MonoBehaviour:
   board: {fileID: 8265245}
   player: {fileID: 57897066}
   playerInitialPos: {x: 1, y: 1}
-  startFoodAmount: 10
+  startFoodAmount: 100
 --- !u!4 &1257766107
 Transform:
   m_ObjectHideFlags: 0

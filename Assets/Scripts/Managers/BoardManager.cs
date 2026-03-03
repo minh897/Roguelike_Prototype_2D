@@ -23,6 +23,11 @@ public class BoardManager : MonoBehaviour
     [SerializeField] private int maxWall;
     [SerializeField] private List<ObstacleObject> obstacles;
 
+    [Header("Enemy")]
+    [SerializeField] private int minEnemy;
+    [SerializeField] private int maxEnemy;
+    [SerializeField] private List<Enemy> enemies;
+
     [Header("Exit")]
     [SerializeField] private ExitObject exitPoint;
 
@@ -57,11 +62,13 @@ public class BoardManager : MonoBehaviour
             {
                 Tile tile;
                 _boardData[x, y] = new();
+                // Randomize wall tiles
                 if (x == 0 || y == 0 || x == width - 1 || y == height - 1)
                 {
                     tile = wallTiles[Random.Range(0, wallTiles.Length)];
                     _boardData[x, y].passable = false;
                 }
+                // Randomize ground tiles
                 else
                 {
                     tile = groundTiles[Random.Range(0, groundTiles.Length)];
@@ -80,6 +87,7 @@ public class BoardManager : MonoBehaviour
         GenerateExit();
         GenerateRandomly(obstacles, minWall, maxWall);
         GenerateRandomly(foods, minFood, maxFood);
+        GenerateRandomly(enemies, minEnemy, maxEnemy);
     }
 
     public Vector3 CellToWorld(Vector2Int cellIndex)
@@ -94,7 +102,6 @@ public class BoardManager : MonoBehaviour
         {
             return null;
         }
-
         return _boardData[cellIndex.x, cellIndex.y];
     }
 
@@ -126,7 +133,6 @@ public class BoardManager : MonoBehaviour
                 {
                     Destroy(cellContainedObj.gameObject);
                 }
-
                 Vector3Int position = new(x, y, 0);
                 _tilemap.SetTile(position, null);
             }
