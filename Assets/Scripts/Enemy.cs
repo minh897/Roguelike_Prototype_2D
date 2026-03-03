@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using UnityEngine;
 
 public class Enemy : CellObject
@@ -35,52 +36,54 @@ public class Enemy : CellObject
         return true;
     }
 
+    // Enemy allways try to move toward the player whenever a turn happened
+    // lest it surrounded by unpassable cell
     private void TurnHappened()
     {
-        // Get the player's cell position in X and Y on the board
-        var playerCell = GameManager.Instance.GetPlayer().GetCellPosition();
-        Debug.Log("Player position: " + playerCell);
+        var playerCoord = GameManager.Instance.GetPlayer().GetCellPosition();
+        var playerToEnemy = playerCoord - _cell;
 
-        // Get the enemy's cell position in X and Y on the board
-        var enemyCell = _cell;
-        Debug.Log("Enemy position: " + enemyCell);
+        // Ignore the differences in orientation
+        var absXDist = Mathf.Abs(playerToEnemy.x);
+        var absYDist = Mathf.Abs(playerToEnemy.y);
 
-        // Calculate the distance between the enemy and the player in X and Y
-        var enemyToPlayer = enemyCell - playerCell;
-        Debug.Log("Distance to player: " + enemyToPlayer);
-
-        // If the Y >= X distance (in number only) then move along Y axis
-        if (Mathf.Abs(enemyToPlayer.y) >= Mathf.Abs(enemyToPlayer.x))
+        // Check if the target cell is passable first
+        // then do the actual moving if it is
+        if (absYDist >= absXDist)
         {
             // If the player is below enemy
-            if (enemyToPlayer.y > 0)
+            if (playerToEnemy.y > 0)
             {
-                var targerCell = enemyCell + Vector2Int.down;
-                Debug.Log("Move to: " + targerCell);
+                TryToMove(_cell + Vector2Int.up);
             }
             // If the player is above enemy
-            else if (enemyToPlayer.y < 0)
+            else if (playerToEnemy.y < 0)
             {
-                var targerCell = enemyCell + Vector2Int.up;
-                Debug.Log("Move to: " + targerCell);
-            }
-        }
-
-        // If the X > Y distance then move along X axis
-        if (Mathf.Abs(enemyToPlayer.x) > Mathf.Abs(enemyToPlayer.y))
-        {
-            // if the player is to the left of enemy
-            if (enemyToPlayer.x > 0)
-            {
-                var targerCell = enemyCell + Vector2Int.left;
-                Debug.Log("Move to: " + targerCell);
-            }
-            // if the player is to the right of enemy
-            else if (enemyToPlayer.x < 0)
-            {
-                var targerCell = enemyCell + Vector2Int.right;
-                Debug.Log("Move to: " + targerCell);
+                TryToMove(_cell + Vector2Int.down);
             }
         }
     }
+
+    private void TryToMove(Vector2Int coord)
+    {
+        var board = GameManager.Instance.GetBoard();
+        var targetCell = board.GetCellData(coord);
+
+        if (!targetCell.passable || 
+            targetCell == null || 
+            targetCell.containedObject != null)
+        {
+            return;
+        }
+
+        // remove the enemy from the current cell
+        var currentCell = board.GetCellData(_cell);
+        currentCell.containedObject = null;
+
+        // add it to the next cell
+        targetCell.containedObject = this;
+        _cell = coord;
+        transform.position = board.CellToWorld(coord);
+    }
+
 }
