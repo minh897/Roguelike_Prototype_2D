@@ -1,4 +1,3 @@
-using System.Threading.Tasks;
 using UnityEngine;
 
 public class Enemy : CellObject
@@ -41,30 +40,42 @@ public class Enemy : CellObject
     private void TurnHappened()
     {
         var playerCoord = GameManager.Instance.GetPlayer().GetCellPosition();
-        var playerToEnemy = playerCoord - _cell;
+        
+        int xDist = playerCoord.x - _cell.x;
+        int yDist = playerCoord.y - _cell.y;
 
         // Ignore the differences in orientation
-        var absXDist = Mathf.Abs(playerToEnemy.x);
-        var absYDist = Mathf.Abs(playerToEnemy.y);
+        var absXDist = Mathf.Abs(xDist);
+        var absYDist = Mathf.Abs(yDist);
 
-        // Check if the target cell is passable first
-        // then do the actual moving if it is
+        // Enemy stop moving and attack when close to the player
+        if (absXDist == 1 && yDist == 0
+             || absYDist == 1 && xDist == 0)
+        {
+            GameManager.Instance.ChangeFood(-2);
+            return;
+        }
+
         if (absYDist >= absXDist)
         {
-            // If the player is below enemy
-            if (playerToEnemy.y > 0)
-            {
-                TryToMove(_cell + Vector2Int.up);
-            }
-            // If the player is above enemy
-            else if (playerToEnemy.y < 0)
-            {
-                TryToMove(_cell + Vector2Int.down);
-            }
+            MoveInDirection(yDist, Vector2Int.up);
+        }
+        else
+        {
+            MoveInDirection(xDist, Vector2Int.right);
         }
     }
 
-    private void TryToMove(Vector2Int coord)
+    private void MoveInDirection(int dist, Vector2Int direction)
+    {
+        // Pick a direction base on the distance from the player
+        // if it's positive then move along the original direction
+        // else move along the opposite
+        var moveDir = dist > 0 ? direction : -direction;
+        TryMoveTo(_cell + moveDir);
+    }
+
+    private void TryMoveTo(Vector2Int coord)
     {
         var board = GameManager.Instance.GetBoard();
         var targetCell = board.GetCellData(coord);
@@ -76,11 +87,11 @@ public class Enemy : CellObject
             return;
         }
 
-        // remove the enemy from the current cell
+        // Remove the enemy from the current cell
         var currentCell = board.GetCellData(_cell);
         currentCell.containedObject = null;
 
-        // add it to the next cell
+        // Add it to the next cell
         targetCell.containedObject = this;
         _cell = coord;
         transform.position = board.CellToWorld(coord);
