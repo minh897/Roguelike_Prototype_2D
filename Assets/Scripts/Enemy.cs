@@ -3,8 +3,19 @@ using UnityEngine;
 public class Enemy : CellObject
 {
     [SerializeField] private int maxHealth;
+    [SerializeField] private float moveSpeed;
+
+    private bool _isMoving;
 
     private int _health;
+    private Vector3 _moveTarget;
+    private Animator _animator;
+
+#region UNITY
+    void Awake()
+    {
+        _animator = GetComponent<Animator>();
+    }
 
     void OnEnable()
     {
@@ -16,6 +27,21 @@ public class Enemy : CellObject
         GameManager.Instance.TurnManager.OnTick -= TurnHappened;
     }
 
+    void Update()
+    {
+        if (_isMoving)
+        {
+            transform.position = Vector3.MoveTowards(transform.position, _moveTarget, moveSpeed * Time.deltaTime);
+            if (transform.position == _moveTarget)
+            {
+                _isMoving = false;
+                _animator.SetBool("Moving", false);
+            }
+        }
+    }
+    #endregion
+
+    #region PUBLIC
     public override void Init(Vector2Int cell)
     {
         base.Init(cell);
@@ -30,23 +56,24 @@ public class Enemy : CellObject
             GameManager.Instance.GetPlayer().PlayAttack();
             return false;
         }
-
         Destroy(gameObject);
         return true;
     }
+#endregion
 
+#region PRIVATE
     // Enemy allways try to move toward the player whenever a turn happened
     // lest it surrounded by unpassable cell
     private void TurnHappened()
     {
-        var playerCoord = GameManager.Instance.GetPlayer().GetCellPosition();
+        Vector2Int playerCoord = GameManager.Instance.GetPlayer().GetCellPosition();
         
         int xDist = playerCoord.x - _cell.x;
         int yDist = playerCoord.y - _cell.y;
 
         // Ignore the differences in orientation
-        var absXDist = Mathf.Abs(xDist);
-        var absYDist = Mathf.Abs(yDist);
+        int absXDist = Mathf.Abs(xDist);
+        int absYDist = Mathf.Abs(yDist);
 
         // Enemy stop moving and attack when close to the player
         bool adjacentHorizontally = absXDist == 1 && yDist == 0;
@@ -54,48 +81,62 @@ public class Enemy : CellObject
         if (adjacentHorizontally || adjacentVertically)
         {
             GameManager.Instance.ChangeFood(-2);
+            _animator.SetTrigger("Attacking");
             return;
         }
 
         if (absYDist >= absXDist)
         {
-            MoveTowardAxis(yDist, Vector2Int.up);
+            if (!MoveTowardAxis(yDist, Vector2Int.up))
+            {
+                MoveTowardAxis(xDist, Vector2Int.right);
+            }
         }
         else
         {
-            MoveTowardAxis(xDist, Vector2Int.right);
+            if (!MoveTowardAxis(xDist, Vector2Int.right))
+            {
+                MoveTowardAxis(yDist, Vector2Int.up);
+            }
         }
     }
 
-    private void MoveTowardAxis(int dist, Vector2Int positiveDirection)
+    private bool MoveTowardAxis(int dist, Vector2Int positiveDirection)
     {
         // Pick a direction base on the distance from the player
         // if it's positive then move along the original direction
         // else move along the opposite
-        var moveDir = dist > 0 ? positiveDirection : -positiveDirection;
-        TryMoveTo(_cell + moveDir);
+        Vector2Int moveDir = dist > 0 ? positiveDirection : -positiveDirection;
+        return TryMoveTo(_cell + moveDir);
     }
 
-    private void TryMoveTo(Vector2Int coord)
+    private bool TryMoveTo(Vector2Int coord)
     {
-        var board = GameManager.Instance.GetBoard();
-        var targetCell = board.GetCellData(coord);
+        BoardManager board = GameManager.Instance.GetBoard();
+        CellData targetCell = board.GetCellData(coord);
 
+        // Can't move into cell containing an object
         if (targetCell == null || 
             !targetCell.passable || 
             targetCell.containedObject != null)
         {
-            return;
+            return false;
         }
 
         // Remove the enemy from the current cell
-        var currentCell = board.GetCellData(_cell);
+        CellData currentCell = board.GetCellData(_cell);
         currentCell.containedObject = null;
 
         // Add it to the next cell
         targetCell.containedObject = this;
         _cell = coord;
-        transform.position = board.CellToWorld(coord);
-    }
 
+        // Set moving condition for animation
+        _moveTarget = board.CellToWorld(coord);
+        _animator.SetBool("Moving", true);
+        _isMoving = true;
+
+        return true;
+    }
+#endregion
 }

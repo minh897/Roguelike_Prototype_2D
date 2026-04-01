@@ -238,7 +238,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: '::'
   moveSpeed: 5
-  _isAttacking: 0
 --- !u!212 &57897067
 SpriteRenderer:
   serializedVersion: 2
@@ -771,7 +770,7 @@ MonoBehaviour:
   board: {fileID: 8265245}
   player: {fileID: 57897066}
   playerInitialPos: {x: 1, y: 1}
-  startFoodAmount: 10
+  startFoodAmount: 20
 --- !u!4 &1257766107
 Transform:
   m_ObjectHideFlags: 0

@@ -4,21 +4,20 @@ using UnityEngine.InputSystem;
 
 public class PlayerController : MonoBehaviour
 {
-    private BoardManager _board;
-    private Vector2Int _cellPosition;
+    [SerializeField] private float moveSpeed = 5f;
 
     private PlayerInputActions _inputActions;
     private InputAction _moveAction;
     private InputAction _restartAction;
+
+    private BoardManager _board;
+    private Vector2Int _cellPosition;
     private Vector2Int _direction;
     private Vector3 _moveTarget;
-    public float moveSpeed = 5f;
 
     private Animator _animator;
 
-    private bool _canMove = false;
     private bool _isMoving = false;
-    public bool _isAttacking = false;
     private bool _isGameStop = false;
 
     void Awake()
@@ -60,13 +59,13 @@ public class PlayerController : MonoBehaviour
         if (_moveAction.WasPressedThisFrame() && _moveAction.IsPressed())
         {
             nextCellTarget += _direction;
-            var nextCellData = _board.GetCellData(nextCellTarget);
+            CellData nextCellData = _board.GetCellData(nextCellTarget);
             if (nextCellData != null && !nextCellData.passable)
             {
                 return;
             }
 
-            var obj = nextCellData.containedObject;
+            CellObject obj = nextCellData.containedObject;
             // Player can move to a cell that doesn't have a cell object
             if (obj == null)
             {
@@ -139,7 +138,7 @@ public class PlayerController : MonoBehaviour
 
     private void OnMove(InputAction.CallbackContext context)
     {
-        var input = context.ReadValue<Vector2>();
+        Vector2 input = context.ReadValue<Vector2>();
         _direction = new((int)input.x, (int)input.y);
     }
 
