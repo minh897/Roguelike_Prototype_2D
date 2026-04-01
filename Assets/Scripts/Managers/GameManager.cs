@@ -14,9 +14,12 @@ public class GameManager : MonoBehaviour
 
     private Label _labelFoodAmount;
     private Label _gameOverMessage;
+    private Label _playerStats;
     private VisualElement _gameOverPanel;
+    private VisualElement _winPanel;
 
     private int _currentLevel;
+    private int _traveledLevel;
     private int _foodAmount;
 
 #region UNITY
@@ -34,7 +37,9 @@ public class GameManager : MonoBehaviour
         
         _labelFoodAmount = uiDoc.rootVisualElement.Q<Label>("FoodAmount");
         _gameOverPanel = uiDoc.rootVisualElement.Q<VisualElement>("GameOverPanel");
+        _winPanel = uiDoc.rootVisualElement.Q<VisualElement>("WinStatsPanel");
         _gameOverMessage = _gameOverPanel.Q<Label>("GameOverMessage");
+        _playerStats = _winPanel.Q<Label>("PlayerStats");
     }
 
     void OnEnable()
@@ -66,16 +71,23 @@ public class GameManager : MonoBehaviour
         // Game over condition
         if (_foodAmount <= 0)
         {
-            player.EnterGameOverState();
+            player.EnterGameStopState();
+            // Set game over ui to visible
             _gameOverPanel.style.visibility = Visibility.Visible;
-            _gameOverMessage.text = "Game Over!\n\nYou traveled through\n" + _currentLevel + " levels";
+            _gameOverMessage.text = "Game Over!\n\nYou traveled through\n" + _traveledLevel + " levels";
         }
+    }
+
+    public void DisplayWinUI()
+    {
+        _winPanel.style.visibility = Visibility.Visible;
     }
 
     [ContextMenu("New Level")]
     public void NewLevel()
     {
         _currentLevel++;
+        _traveledLevel++;
         board.CleanBoard();
         board.Init();
         player.Spawn(board, playerInitialPos);
@@ -84,9 +96,11 @@ public class GameManager : MonoBehaviour
     public void StartNewGame()
     {
         _gameOverPanel.style.visibility = Visibility.Hidden;
+        _winPanel.style.visibility = Visibility.Hidden;
 
-        // Gameplay rule: always start over at level 1
-        _currentLevel = 1; 
+        // Gameplay rule: always start over at level 1, and reset traveled level to 0
+        _currentLevel = 1;
+        _traveledLevel = 0;
         _foodAmount = startFoodAmount;
         _labelFoodAmount.text = _foodAmount.ToString();
 

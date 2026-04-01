@@ -771,7 +771,7 @@ MonoBehaviour:
   board: {fileID: 8265245}
   player: {fileID: 57897066}
   playerInitialPos: {x: 1, y: 1}
-  startFoodAmount: 100
+  startFoodAmount: 10
 --- !u!4 &1257766107
 Transform:
   m_ObjectHideFlags: 0

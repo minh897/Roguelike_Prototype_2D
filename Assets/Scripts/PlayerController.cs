@@ -1,5 +1,4 @@
 using InputActions;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -20,7 +19,7 @@ public class PlayerController : MonoBehaviour
     private bool _canMove = false;
     private bool _isMoving = false;
     public bool _isAttacking = false;
-    private bool _isGameOver = false;
+    private bool _isGameStop = false;
 
     void Awake()
     {
@@ -46,7 +45,7 @@ public class PlayerController : MonoBehaviour
 
     void Update()
     {
-        if (_isGameOver)
+        if (_isGameStop)
         {
             if (_restartAction.WasPressedThisFrame())
             {
@@ -96,12 +95,12 @@ public class PlayerController : MonoBehaviour
 
     public void Init()
     {
-        _isGameOver = false;
+        _isGameStop = false;
     }
 
-    public void EnterGameOverState()
+    public void EnterGameStopState()
     {
-        _isGameOver = true;
+        _isGameStop = true;
     }
 
     // Spawn player character on game board

@@ -13,6 +13,7 @@ public class ExitObject : CellObject
 
     public override void PlayerEntered()
     {
-        Debug.Log("Player entered the exit ");
+        GameManager.Instance.DisplayWinUI();
+        GameManager.Instance.GetPlayer().EnterGameStopState();
     }
 }
