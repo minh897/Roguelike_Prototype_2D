@@ -4,7 +4,9 @@ using UnityEngine.InputSystem;
 
 public class PlayerController : MonoBehaviour
 {
-    [SerializeField] private float moveSpeed = 5f;
+    [SerializeField] private AudioClip[] sfxFootSteps;
+    [SerializeField] private AudioClip[] sfxAttacks;
+    [SerializeField] private AudioClip[] sfxEatFoods;
 
     private PlayerInputActions _inputActions;
     private InputAction _moveAction;
@@ -13,13 +15,12 @@ public class PlayerController : MonoBehaviour
     private BoardManager _board;
     private Vector2Int _cellPosition;
     private Vector2Int _direction;
-    private Vector3 _moveTarget;
 
     private Animator _animator;
 
-    private bool _isMoving = false;
     private bool _isGameStop = false;
 
+#region UNITY
     void Awake()
     {
         _inputActions = new();
@@ -69,29 +70,22 @@ public class PlayerController : MonoBehaviour
             // Player can move to a cell that doesn't have a cell object
             if (obj == null)
             {
-                MoveTo(nextCellTarget, false);
+                MoveTo(nextCellTarget);
+                AudioManager.Instance.PlayAudio(sfxFootSteps, transform, 1f);
             }
             // Check the condition for the player to occupy a cell containing an object
             else if (obj.PlayerWantsToEnter())
             {
-                MoveTo(nextCellTarget, false);
+                MoveTo(nextCellTarget);
                 obj.PlayerEntered();
             }
 
             GameManager.Instance.TurnManager.Tick();
         }
-
-        if (_isMoving)
-        {
-            transform.position = Vector3.MoveTowards(transform.position, _moveTarget, moveSpeed * Time.deltaTime);
-            if (transform.position == _moveTarget)
-            {
-                _isMoving = false;
-                _animator.SetBool("Moving", false);
-            }
-        }
     }
+#endregion
 
+#region PUBLIC
     public void Init()
     {
         _isGameStop = false;
@@ -106,24 +100,13 @@ public class PlayerController : MonoBehaviour
     public void Spawn(BoardManager boardManager, Vector2Int cell)
     {
         _board = boardManager;
-        MoveTo(cell, true);
+        MoveTo(cell);
     }
 
-    public void MoveTo(Vector2Int cell, bool immediate)
+    public void MoveTo(Vector2Int cell)
     {
         _cellPosition = cell;
-        // Player move immediately without animation
-        if (immediate)
-        {
-            _isMoving = false;
-            transform.position = _board.CellToWorld(_cellPosition);
-        }
-        else
-        {
-            _isMoving = true;
-            _moveTarget = _board.CellToWorld(_cellPosition);
-        }
-        _animator.SetBool("Moving", _isMoving);
+        transform.position = _board.CellToWorld(_cellPosition);
     }
 
     public Vector2Int GetCellPosition()
@@ -134,12 +117,20 @@ public class PlayerController : MonoBehaviour
     public void PlayAttack()
     {
         _animator.SetTrigger("Attacking");
+        AudioManager.Instance.PlayAudio(sfxAttacks, transform, 1f);
     }
 
+    public void PlayFoodChomp()
+    {
+        AudioManager.Instance.PlayAudio(sfxEatFoods, transform, 1f);
+    }
+#endregion
+
+#region PRIVATE
     private void OnMove(InputAction.CallbackContext context)
     {
         Vector2 input = context.ReadValue<Vector2>();
         _direction = new((int)input.x, (int)input.y);
     }
-
+#endregion
 }

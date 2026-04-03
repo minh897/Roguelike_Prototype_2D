@@ -4,8 +4,8 @@ public class FoodObject : CellObject
 
     public override void PlayerEntered()
     {
-        // Debug.Log("Food increased");
         GameManager.Instance.ChangeFood(foodPoint);
+        GameManager.Instance.GetPlayer().PlayFoodChomp();
         Destroy(gameObject);  
     }
 }
