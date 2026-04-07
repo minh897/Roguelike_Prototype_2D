@@ -71,10 +71,7 @@ public class GameManager : MonoBehaviour
         // Game over condition
         if (_foodAmount <= 0)
         {
-            player.EnterGameStopState();
-            // Set game over ui to visible
-            _gameOverPanel.style.visibility = Visibility.Visible;
-            _gameOverMessage.text = "Game Over!\n\nYou traveled through\n" + _traveledLevel + " levels";
+            TriggerGameOver();
         }
     }
 
@@ -88,8 +85,10 @@ public class GameManager : MonoBehaviour
     {
         _currentLevel++;
         _traveledLevel++;
+
         board.CleanBoard();
         board.Init();
+
         player.Spawn(board, playerInitialPos);
     }
 
@@ -116,6 +115,16 @@ public class GameManager : MonoBehaviour
     private void OnTurnHappen()
     {
         ChangeFood(-1);
+    }
+
+    private void TriggerGameOver()
+    {
+        player.PlayPlayerDown();
+        player.EnterGameStopState();
+        
+        // Set game over ui to visible
+        _gameOverPanel.style.visibility = Visibility.Visible;
+        _gameOverMessage.text = "Game Over!\n\nYou traveled through\n" + _traveledLevel + " levels";
     }
 #endregion
 }

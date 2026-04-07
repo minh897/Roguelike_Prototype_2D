@@ -237,15 +237,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b3db36555ef8d5223899c52c081226b5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: '::'
-  sfxFootSteps:
-  - {fileID: 8300000, guid: 892962212a4b74d1c9f578a3b6ea6439, type: 3}
-  - {fileID: 8300000, guid: a826bc3d758db43d6ae9caf415b63d1d, type: 3}
-  sfxAttacks:
-  - {fileID: 8300000, guid: 4c2332bc8245b474dad63074059bb755, type: 3}
-  - {fileID: 8300000, guid: f6aaac83be9e0493493aace800b76619, type: 3}
-  sfxEatFoods:
-  - {fileID: 8300000, guid: 1cb61f83d60374c7389bb547431919e3, type: 3}
-  - {fileID: 8300000, guid: 062161c1897a54088a5430f8c197e1b8, type: 3}
 --- !u!212 &57897067
 SpriteRenderer:
   serializedVersion: 2
@@ -871,7 +862,7 @@ MonoBehaviour:
   board: {fileID: 8265245}
   player: {fileID: 57897066}
   playerInitialPos: {x: 1, y: 1}
-  startFoodAmount: 20
+  startFoodAmount: 5
 --- !u!4 &1257766107
 Transform:
   m_ObjectHideFlags: 0
@@ -896,9 +887,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1426362983}
-  - component: {fileID: 1426362984}
   m_Layer: 0
-  m_Name: SfxContainer
+  m_Name: SoundContainer
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -919,18 +909,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1427463675}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1426362984
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1426362982}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 69b1a47c37e97f2e9883040af6cb5efe, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: '::'
 --- !u!1 &1427463674
 GameObject:
   m_ObjectHideFlags: 0
@@ -976,8 +954,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ba60bd2c5032adf028e9c4d7a863fa6d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SoundManager
-  sfxContainer: {fileID: 1426362983}
-  sfxSource: {fileID: 2089938917635704546, guid: 188b0c2ed1bdcb862a8e22d9eed3db1d, type: 3}
+  <SoundLibrary>k__BackingField: {fileID: 11400000, guid: 673e396bf4002d939932892f5567e8b5, type: 2}
+  soundContainer: {fileID: 1426362983}
+  audioSource: {fileID: 2089938917635704546, guid: 188b0c2ed1bdcb862a8e22d9eed3db1d, type: 3}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

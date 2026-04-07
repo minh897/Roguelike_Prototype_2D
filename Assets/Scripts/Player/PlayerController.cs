@@ -4,10 +4,6 @@ using UnityEngine.InputSystem;
 
 public class PlayerController : MonoBehaviour
 {
-    [SerializeField] private AudioClip[] sfxFootSteps;
-    [SerializeField] private AudioClip[] sfxAttacks;
-    [SerializeField] private AudioClip[] sfxEatFoods;
-
     private PlayerInputActions _inputActions;
     private InputAction _moveAction;
     private InputAction _restartAction;
@@ -17,6 +13,7 @@ public class PlayerController : MonoBehaviour
     private Vector2Int _direction;
 
     private Animator _animator;
+    private SoundLibrary _sounds;
 
     private bool _isGameStop = false;
 
@@ -27,6 +24,7 @@ public class PlayerController : MonoBehaviour
         _moveAction = _inputActions.Player.Move;
         _restartAction = _inputActions.Player.Interact;
         _animator = GetComponent<Animator>();
+        _sounds = AudioManager.Instance.SoundLibrary;
     }
 
     void OnEnable()
@@ -71,7 +69,7 @@ public class PlayerController : MonoBehaviour
             if (obj == null)
             {
                 MoveTo(nextCellTarget);
-                AudioManager.Instance.PlayAudio(sfxFootSteps, transform, 1f);
+                AudioManager.Instance.PlayAudio(_sounds.sfxFootSteps, transform, 1f, false);
             }
             // Check the condition for the player to occupy a cell containing an object
             else if (obj.PlayerWantsToEnter())
@@ -117,12 +115,17 @@ public class PlayerController : MonoBehaviour
     public void PlayAttack()
     {
         _animator.SetTrigger("Attacking");
-        AudioManager.Instance.PlayAudio(sfxAttacks, transform, 1f);
+        AudioManager.Instance.PlayAudio(_sounds.sfxAttacks, transform, 1f, false);
     }
 
     public void PlayFoodChomp()
     {
-        AudioManager.Instance.PlayAudio(sfxEatFoods, transform, 1f);
+        AudioManager.Instance.PlayAudio(_sounds.sfxEatFoods, transform, 1f, false);
+    }
+
+    public void PlayPlayerDown()
+    {
+        AudioManager.Instance.PlayAudio(_sounds.sfxPlayerDowns, transform, 1f, false);
     }
 #endregion
 
