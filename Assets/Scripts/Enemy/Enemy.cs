@@ -9,12 +9,15 @@ public class Enemy : CellObject
 
     private int _health;
     private Vector3 _moveTarget;
+
     private Animator _animator;
+    private DamageFlash _damageFlash;
 
 #region UNITY
     void Awake()
     {
         _animator = GetComponent<Animator>();
+        _damageFlash = GetComponent<DamageFlash>();
     }
 
     void OnEnable()
@@ -39,9 +42,9 @@ public class Enemy : CellObject
             }
         }
     }
-    #endregion
+#endregion
 
-    #region PUBLIC
+#region PUBLIC
     public override void Init(Vector2Int cell)
     {
         base.Init(cell);
@@ -54,6 +57,7 @@ public class Enemy : CellObject
         if (_health > 0)
         {
             GameManager.Instance.GetPlayer().PlayAttack();
+            _damageFlash.PlayDamageFlash();
             return false;
         }
         Destroy(gameObject);
@@ -81,6 +85,7 @@ public class Enemy : CellObject
         if (adjacentHorizontally || adjacentVertically)
         {
             GameManager.Instance.ChangeFood(-2);
+            GameManager.Instance.GetPlayer().PlayPlayerDamage();
             _animator.SetTrigger("Attacking");
             return;
         }

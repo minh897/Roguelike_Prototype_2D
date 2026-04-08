@@ -15,5 +15,7 @@ public class ExitObject : CellObject
     {
         GameManager.Instance.DisplayWinUI();
         GameManager.Instance.GetPlayer().EnterGameStopState();
+        AudioManager.Instance.PlayAudio(
+            AudioManager.Instance.SoundLibrary.victory, transform, 1f, false);
     }
 }

@@ -13,7 +13,7 @@ public class PlayerController : MonoBehaviour
     private Vector2Int _direction;
 
     private Animator _animator;
-    private SoundLibrary _sounds;
+    private DamageFlash _damageFlash;
 
     private bool _isGameStop = false;
 
@@ -24,7 +24,7 @@ public class PlayerController : MonoBehaviour
         _moveAction = _inputActions.Player.Move;
         _restartAction = _inputActions.Player.Interact;
         _animator = GetComponent<Animator>();
-        _sounds = AudioManager.Instance.SoundLibrary;
+        _damageFlash = GetComponent<DamageFlash>();
     }
 
     void OnEnable()
@@ -69,7 +69,8 @@ public class PlayerController : MonoBehaviour
             if (obj == null)
             {
                 MoveTo(nextCellTarget);
-                AudioManager.Instance.PlayAudio(_sounds.sfxFootSteps, transform, 1f, false);
+                AudioManager.Instance.PlayAudio(
+                    AudioManager.Instance.SoundLibrary.sfxFootSteps, transform, 1f, false);
             }
             // Check the condition for the player to occupy a cell containing an object
             else if (obj.PlayerWantsToEnter())
@@ -115,17 +116,25 @@ public class PlayerController : MonoBehaviour
     public void PlayAttack()
     {
         _animator.SetTrigger("Attacking");
-        AudioManager.Instance.PlayAudio(_sounds.sfxAttacks, transform, 1f, false);
+        AudioManager.Instance.PlayAudio(
+            AudioManager.Instance.SoundLibrary.sfxAttacks, transform, 1f, false);
     }
 
     public void PlayFoodChomp()
     {
-        AudioManager.Instance.PlayAudio(_sounds.sfxEatFoods, transform, 1f, false);
+        AudioManager.Instance.PlayAudio(
+            AudioManager.Instance.SoundLibrary.sfxEatFoods, transform, 1f, false);
     }
 
     public void PlayPlayerDown()
     {
-        AudioManager.Instance.PlayAudio(_sounds.sfxPlayerDowns, transform, 1f, false);
+        AudioManager.Instance.PlayAudio(
+            AudioManager.Instance.SoundLibrary.sfxPlayerDowns, transform, 1f, false);
+    }
+
+    public void PlayPlayerDamage()
+    {
+        _damageFlash.PlayDamageFlash();
     }
 #endregion
 
