@@ -10,7 +10,6 @@ public class AudioManager : MonoBehaviour
     [SerializeField] private Transform soundContainer;
     [SerializeField] private AudioSource audioSource;
 
-#region UNITY
     void Awake()
     {
         if (Instance != null)
@@ -26,9 +25,7 @@ public class AudioManager : MonoBehaviour
         // Play background music
         PlayAudio(SoundLibrary.bgms, transform, 1f, true);
     }
-#endregion
 
-#region PUBLIC
     public void PlayAudio(AudioClip[] audioClips, Transform spawnPoint, float volume, bool looping)
     {
         AudioSource source = Instantiate(audioSource, spawnPoint.position, Quaternion.identity, soundContainer);
@@ -43,5 +40,4 @@ public class AudioManager : MonoBehaviour
         else 
             source.loop = true;
     }
-#endregion
 }

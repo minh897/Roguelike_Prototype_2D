@@ -1,11 +1,14 @@
+using UnityEngine;
+
 public class FoodObject : CellObject
 {
-    public int foodPoint;
+    [SerializeField] private int _foodPoint;
 
     public override void PlayerEntered()
     {
-        GameManager.Instance.ChangeFood(foodPoint);
+        GameManager.Instance.ChangeFood(_foodPoint);
         GameManager.Instance.GetPlayer().PlayFoodChomp();
+        VFXManager.Instance.TriggerFloatingText(_foodPoint.ToString(), transform);
         Destroy(gameObject);  
     }
 }

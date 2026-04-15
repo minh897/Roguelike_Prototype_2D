@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: SoundLibrary
   m_EditorClassIdentifier: Assembly-CSharp::SoundLibrary
   victory:
-  - {fileID: 8300000, guid: eb8ec097c15e6611ab0f3cda9a4b12a5, type: 3}
+  - {fileID: 8300000, guid: ae18171388aa52dff800bf1dc5950e41, type: 3}
   bgms:
   - {fileID: 8300000, guid: 2d75080d0851d4613ada1117d91ee417, type: 3}
   sfxFootSteps:

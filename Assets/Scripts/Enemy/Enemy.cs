@@ -3,15 +3,14 @@ using UnityEngine;
 public class Enemy : CellObject
 {
     [SerializeField] private int maxHealth;
+    [SerializeField] private int damageDeal;
     [SerializeField] private float moveSpeed;
-
-    private bool _isMoving;
-
-    private int _health;
-    private Vector3 _moveTarget;
 
     private Animator _animator;
     private DamageFlash _damageFlash;
+
+    private int _health;
+    private int _damage;
 
 #region UNITY
     void Awake()
@@ -29,19 +28,6 @@ public class Enemy : CellObject
     {
         GameManager.Instance.TurnManager.OnTick -= TurnHappened;
     }
-
-    void Update()
-    {
-        if (_isMoving)
-        {
-            transform.position = Vector3.MoveTowards(transform.position, _moveTarget, moveSpeed * Time.deltaTime);
-            if (transform.position == _moveTarget)
-            {
-                _isMoving = false;
-                _animator.SetBool("Moving", false);
-            }
-        }
-    }
 #endregion
 
 #region PUBLIC
@@ -49,6 +35,7 @@ public class Enemy : CellObject
     {
         base.Init(cell);
         _health = maxHealth;
+        _damage = damageDeal;
     }
 
     public override bool PlayerWantsToEnter()
@@ -84,7 +71,7 @@ public class Enemy : CellObject
         bool adjacentVertically = absYDist == 1 && xDist == 0;
         if (adjacentHorizontally || adjacentVertically)
         {
-            GameManager.Instance.ChangeFood(-2);
+            GameManager.Instance.ChangeFood(_damage);
             GameManager.Instance.GetPlayer().PlayPlayerDamage();
             _animator.SetTrigger("Attacking");
             return;
@@ -135,11 +122,6 @@ public class Enemy : CellObject
         // Add it to the next cell
         targetCell.containedObject = this;
         _cell = coord;
-
-        // Set moving condition for animation
-        _moveTarget = board.CellToWorld(coord);
-        _animator.SetBool("Moving", true);
-        _isMoving = true;
 
         return true;
     }
