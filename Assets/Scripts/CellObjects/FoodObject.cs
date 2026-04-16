@@ -8,7 +8,7 @@ public class FoodObject : CellObject
     {
         GameManager.Instance.ChangeFood(_foodPoint);
         GameManager.Instance.GetPlayer().PlayFoodChomp();
-        VFXManager.Instance.TriggerFloatingText(_foodPoint.ToString(), transform);
+        VFXManager.Instance.TriggerFloatingText(_foodPoint.ToString(), transform.position);
         Destroy(gameObject);  
     }
 }

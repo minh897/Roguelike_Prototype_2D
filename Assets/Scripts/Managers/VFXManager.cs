@@ -17,13 +17,13 @@ public class VFXManager : MonoBehaviour
         Instance = this;
     }
 
-    public void TriggerFloatingText(string text, Transform spawnPoint)
+    public void TriggerFloatingText(string text, Vector3 spawnPoint)
     {
         var prefab = VFXS.floatingText.prefab;
         float animSpeed = VFXS.floatingText.animSpeed;
         float expireTime = VFXS.floatingText.expireTime;
 
-        var spawnEffect = Instantiate(prefab, spawnPoint.position, Quaternion.identity);
-        spawnEffect.Init(text, animSpeed, expireTime);
+        var spawnEffect = Instantiate(prefab);
+        spawnEffect.Init(text, animSpeed, expireTime, spawnPoint);
     }
 }

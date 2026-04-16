@@ -13,6 +13,6 @@ MonoBehaviour:
   m_Name: VisualEffects
   m_EditorClassIdentifier: Assembly-CSharp::VisualEffects
   floatingText:
-    prefab: {fileID: 1045645601459098551, guid: 841c3410a1da64879be297b8a73e0b91, type: 3}
+    prefab: {fileID: 725545911960697215, guid: 841c3410a1da64879be297b8a73e0b91, type: 3}
     animSpeed: 1
     expireTime: 0.5
