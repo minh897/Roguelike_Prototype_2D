@@ -11,20 +11,21 @@ public class PlayerInputHandler : MonoBehaviour
     private InputAction _moveAction;
     private InputAction _restartAction;
 
-    // private Vector2Int _direction;
-
     void Awake()
     {
         _inputActions = new();
         _moveAction = _inputActions.Player.Move;
-        _restartAction = _inputActions.Player.Interact;
+        _restartAction = _inputActions.Player.Restart;
     }
 
     void OnEnable()
     {
         _moveAction.started += OnMove;
         _moveAction.canceled += OnMove;
+
         _restartAction.started += OnRestart;
+        _restartAction.canceled += OnRestart;
+
         _inputActions.Player.Enable();
     }
 
@@ -32,20 +33,20 @@ public class PlayerInputHandler : MonoBehaviour
     {
         _moveAction.started -= OnMove;
         _moveAction.canceled -= OnMove;
+
         _restartAction.started -= OnRestart;
+        _restartAction.canceled -= OnRestart;
+
         _inputActions.Player.Disable();
     }
 
-#region PRIVATE
     private void OnMove(InputAction.CallbackContext context)
     {
         InputMove = context.ReadValue<Vector2>();
-        // _direction = new((int)input.x, (int)input.y);
     }
 
     private void OnRestart(InputAction.CallbackContext context)
     {
         InputRestart = context.ReadValueAsButton();
     }
-#endregion
 }
