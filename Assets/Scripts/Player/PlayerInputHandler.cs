@@ -5,10 +5,8 @@ using UnityEngine.InputSystem;
 
 public class PlayerInputHandler : MonoBehaviour
 {
-    public event Action OnMovePressed;
-
-    public Vector2 InputMove { get; private set; }
-    public bool InputRestart { get; private set; }
+    public event Action<Vector2> OnMovePressed;
+    public event Action OnRestartPressed;
 
     private PlayerInputActions _inputActions;
     private InputAction _moveAction;
@@ -39,12 +37,12 @@ public class PlayerInputHandler : MonoBehaviour
 
     private void OnMove(InputAction.CallbackContext context)
     {
-        InputMove = context.ReadValue<Vector2>();
-        OnMovePressed?.Invoke();
+        var input = context.ReadValue<Vector2>();
+        OnMovePressed?.Invoke(input);
     }
 
     private void OnRestart(InputAction.CallbackContext context)
     {
-        InputRestart = context.ReadValueAsButton();
+        OnRestartPressed?.Invoke();
     }
 }

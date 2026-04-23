@@ -2,14 +2,14 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
+    private BoardManager _board;
     private Animator _animator;
     private DamageFlash _damageFlash;
     private PlayerInputHandler _inputHandler;
     private PlayerMovement _playerMovement;
 
-    private bool _isGameStop = false;
+    private bool _isGameStop;
 
-#region UNITY
     void Awake()
     {
         _animator = GetComponent<Animator>();
@@ -18,29 +18,36 @@ public class PlayerController : MonoBehaviour
         _playerMovement = GetComponent<PlayerMovement>();
     }
 
-    void Update()
+    void OnEnable()
     {
-        if (_isGameStop)
-        {
-            if (_inputHandler.InputRestart)
-            {
-                GameManager.Instance.StartNewGame();
-            }
-            return;
-        }
+        _inputHandler.OnMovePressed += CallMovementLogic;
+        _inputHandler.OnRestartPressed += RestartGame;
     }
-#endregion
+
+    void OnDisable()
+    {
+        _inputHandler.OnMovePressed -= CallMovementLogic;
+        _inputHandler.OnRestartPressed -= RestartGame;
+    }
 
 #region PUBLIC
     public void Init(BoardManager boardManager, Vector2Int cell)
     {
         _isGameStop = false;
+        _playerMovement.enabled = true;
         _playerMovement.Spawn(boardManager, cell);
     }
 
     public void EnterGameStopState()
     {
         _isGameStop = true;
+        _playerMovement.enabled = false;
+    }
+
+    public void RestartGame()
+    {
+        if (_isGameStop)
+            GameManager.Instance.StartNewGame();
     }
 
     public void PlayAttack()
@@ -68,5 +75,11 @@ public class PlayerController : MonoBehaviour
     }
 #endregion
 
-
+#region PRIVATE
+    private void CallMovementLogic(Vector2 input)
+    {
+        if (_playerMovement.TryToMove(input))
+            GameManager.Instance.TurnManager.Tick();
+    }
+#endregion
 }
