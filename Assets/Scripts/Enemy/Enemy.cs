@@ -57,7 +57,8 @@ public class Enemy : CellObject
     // lest it surrounded by unpassable cell
     private void TurnHappened()
     {
-        Vector2Int playerCoord = GameManager.Instance.GetPlayer().GetCellPosition();
+        // Vector2Int playerCoord = GameManager.Instance.GetPlayer().GetCellPosition();
+        Vector2Int playerCoord = new(0,0);
         
         int xDist = playerCoord.x - _cell.x;
         int yDist = playerCoord.y - _cell.y;

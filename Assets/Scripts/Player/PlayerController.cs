@@ -2,11 +2,10 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
-    private BoardManager _board;
-    private Vector2Int _cellPosition;
-
     private Animator _animator;
     private DamageFlash _damageFlash;
+    private PlayerInputHandler _inputHandler;
+    private PlayerMovement _playerMovement;
 
     private bool _isGameStop = false;
 
@@ -15,78 +14,33 @@ public class PlayerController : MonoBehaviour
     {
         _animator = GetComponent<Animator>();
         _damageFlash = GetComponent<DamageFlash>();
+        _inputHandler = GetComponent<PlayerInputHandler>();
+        _playerMovement = GetComponent<PlayerMovement>();
     }
 
     void Update()
     {
-        // if (_isGameStop)
-        // {
-        //     if (_restartAction.WasPressedThisFrame())
-        //     {
-        //         GameManager.Instance.StartNewGame();
-        //     }
-        //     return;
-        // }
-
-        // Vector2Int nextCellTarget = _cellPosition;
-
-        // // Check for a passable cell in the moving direction
-        // if (_moveAction.WasPressedThisFrame() && _moveAction.IsPressed())
-        // {
-        //     nextCellTarget += _direction;
-        //     CellData nextCellData = _board.GetCellData(nextCellTarget);
-        //     if (nextCellData != null && !nextCellData.passable)
-        //     {
-        //         return;
-        //     }
-
-        //     CellObject obj = nextCellData.containedObject;
-        //     // Player can move to a cell that doesn't have a cell object
-        //     if (obj == null)
-        //     {
-        //         MoveTo(nextCellTarget);
-        //         AudioManager.Instance.PlayAudio(
-        //             AudioManager.Instance.SoundLibrary.sfxFootSteps, transform, 1f, false);
-        //     }
-        //     // Check the condition for the player to occupy a cell containing an object
-        //     else if (obj.PlayerWantsToEnter())
-        //     {
-        //         MoveTo(nextCellTarget);
-        //         obj.PlayerEntered();
-        //     }
-
-        //     GameManager.Instance.TurnManager.Tick();
-        // }
+        if (_isGameStop)
+        {
+            if (_inputHandler.InputRestart)
+            {
+                GameManager.Instance.StartNewGame();
+            }
+            return;
+        }
     }
 #endregion
 
 #region PUBLIC
-    public void Init()
+    public void Init(BoardManager boardManager, Vector2Int cell)
     {
         _isGameStop = false;
+        _playerMovement.Spawn(boardManager, cell);
     }
 
     public void EnterGameStopState()
     {
         _isGameStop = true;
-    }
-
-    // Spawn player character on game board
-    public void Spawn(BoardManager boardManager, Vector2Int cell)
-    {
-        _board = boardManager;
-        MoveTo(cell);
-    }
-
-    public void MoveTo(Vector2Int cell)
-    {
-        _cellPosition = cell;
-        transform.position = _board.CellToWorld(_cellPosition);
-    }
-
-    public Vector2Int GetCellPosition()
-    {
-        return _cellPosition;
     }
 
     public void PlayAttack()

@@ -1,9 +1,12 @@
+using System;
 using UnityEngine;
 using InputActions;
 using UnityEngine.InputSystem;
 
 public class PlayerInputHandler : MonoBehaviour
 {
+    public event Action OnMovePressed;
+
     public Vector2 InputMove { get; private set; }
     public bool InputRestart { get; private set; }
 
@@ -21,10 +24,7 @@ public class PlayerInputHandler : MonoBehaviour
     void OnEnable()
     {
         _moveAction.started += OnMove;
-        _moveAction.canceled += OnMove;
-
         _restartAction.started += OnRestart;
-        _restartAction.canceled += OnRestart;
 
         _inputActions.Player.Enable();
     }
@@ -32,10 +32,7 @@ public class PlayerInputHandler : MonoBehaviour
     void OnDisable()
     {
         _moveAction.started -= OnMove;
-        _moveAction.canceled -= OnMove;
-
         _restartAction.started -= OnRestart;
-        _restartAction.canceled -= OnRestart;
 
         _inputActions.Player.Disable();
     }
@@ -43,6 +40,7 @@ public class PlayerInputHandler : MonoBehaviour
     private void OnMove(InputAction.CallbackContext context)
     {
         InputMove = context.ReadValue<Vector2>();
+        OnMovePressed?.Invoke();
     }
 
     private void OnRestart(InputAction.CallbackContext context)

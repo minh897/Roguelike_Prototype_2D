@@ -89,7 +89,7 @@ public class GameManager : MonoBehaviour
         board.CleanBoard();
         board.Init();
 
-        player.Spawn(board, playerInitialPos);
+        // player.Spawn(board, playerInitialPos);
     }
 
     public void StartNewGame()
@@ -106,8 +106,7 @@ public class GameManager : MonoBehaviour
         board.CleanBoard();
         board.Init();
 
-        player.Init();
-        player.Spawn(board, playerInitialPos);
+        player.Init(board, playerInitialPos);
     }
 #endregion
 
