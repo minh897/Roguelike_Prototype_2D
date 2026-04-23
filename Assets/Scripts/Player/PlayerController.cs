@@ -79,7 +79,11 @@ public class PlayerController : MonoBehaviour
     private void CallMovementLogic(Vector2 input)
     {
         if (_playerMovement.TryToMove(input))
+        {
             GameManager.Instance.TurnManager.Tick();
+            AudioManager.Instance.PlayAudio(
+                AudioManager.Instance.SoundLibrary.sfxFootSteps, transform, 1f, false);
+        }
     }
 #endregion
 }

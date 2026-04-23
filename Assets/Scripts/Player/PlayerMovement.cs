@@ -15,9 +15,9 @@ public class PlayerMovement : MonoBehaviour
         _direction = new((int)input.x, (int)input.y);
 
         Vector2Int nextCellTarget = _currentCellPos + _direction;
-
-        // Check for a passable cell in the moving direction
         CellData nextCellData = _board.GetCellData(nextCellTarget);
+
+        // Stop player from occupying an impassable cell
         if (nextCellData != null && !nextCellData.passable)
             return false;
 
@@ -26,8 +26,6 @@ public class PlayerMovement : MonoBehaviour
         if (obj == null)
         {
             MoveTo(nextCellTarget);
-            AudioManager.Instance.PlayAudio(
-                AudioManager.Instance.SoundLibrary.sfxFootSteps, transform, 1f, false);
         }
 
         // Check the condition for the player to occupy a cell containing an object
@@ -38,7 +36,6 @@ public class PlayerMovement : MonoBehaviour
         }
 
         return true;
-        // GameManager.Instance.TurnManager.Tick();
     }
 
     // Spawn the player character on game board
