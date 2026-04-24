@@ -104,7 +104,7 @@ public class Enemy : CellObject
 
     private bool TryMoveTo(Vector2Int coord)
     {
-        BoardManager board = GameManager.Instance.GetBoard();
+        BoardManager board = BoardManager.Instance;
         CellData targetCell = board.GetCellData(coord);
 
         // Can't move into cell containing an object
@@ -122,6 +122,8 @@ public class Enemy : CellObject
         // Add it to the next cell
         targetCell.containedObject = this;
         _cell = coord;
+        
+        transform.position = board.CellToWorld(_cell);
 
         return true;
     }
