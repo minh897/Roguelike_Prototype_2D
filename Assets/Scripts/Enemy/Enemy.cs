@@ -34,6 +34,7 @@ public class Enemy : CellObject
     public override void Init(Vector2Int cell)
     {
         base.Init(cell);
+        
         _health = maxHealth;
         _damage = damageDeal;
     }
@@ -43,7 +44,6 @@ public class Enemy : CellObject
         _health -= 1;
         if (_health > 0)
         {
-            GameManager.Instance.GetPlayer().PlayAttack();
             _damageFlash.PlayDamageFlash();
             return false;
         }
@@ -57,8 +57,7 @@ public class Enemy : CellObject
     // lest it surrounded by unpassable cell
     private void TurnHappened()
     {
-        // Vector2Int playerCoord = GameManager.Instance.GetPlayer().GetCellPosition();
-        Vector2Int playerCoord = new(0,0);
+        Vector2Int playerCoord = GameManager.Instance.GetPlayer().GetCellPosition();
         
         int xDist = playerCoord.x - _cell.x;
         int yDist = playerCoord.y - _cell.y;
@@ -72,9 +71,9 @@ public class Enemy : CellObject
         bool adjacentVertically = absYDist == 1 && xDist == 0;
         if (adjacentHorizontally || adjacentVertically)
         {
-            GameManager.Instance.ChangeFood(_damage);
-            GameManager.Instance.GetPlayer().PlayPlayerDamage();
             _animator.SetTrigger("Attacking");
+            GameManager.Instance.ChangeFood(_damage);
+            GameManager.Instance.GetPlayer().GotAttacked();
             return;
         }
 

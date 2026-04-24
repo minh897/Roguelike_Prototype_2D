@@ -1,8 +1,12 @@
+using System;
 using UnityEngine;
 
 public class PlayerMovement : MonoBehaviour
 {
-    private Vector2Int _currentCellPos;
+    public event Action OnWantToEnterFail;
+
+    public Vector2Int CurrentCellPos { get; private set; }
+
     private Vector2Int _direction;
 
     public bool TryToMove(Vector2 input, BoardManager board)
@@ -12,23 +16,29 @@ public class PlayerMovement : MonoBehaviour
 
         _direction = new((int)input.x, (int)input.y);
 
-        Vector2Int nextCellTarget = _currentCellPos + _direction;
+        Vector2Int nextCellTarget = CurrentCellPos + _direction;
         CellData nextCellData = board.GetCellData(nextCellTarget);
 
-        // Stop player from occupying an impassable cell (borders)
+        // Stop player from occupying an unpassable cell (borders)
         if (nextCellData != null && !nextCellData.passable)
             return false;
 
-        // Check the condition for the player to occupy a passable cell
         CellObject obj = nextCellData.containedObject;
+        // The target cell is empty
         if (obj == null)
         {
             MoveTo(nextCellTarget, board);
-        } 
+        }
+        // The target cell is not empty and the player wants to enter
         else if (obj.PlayerWantsToEnter())
         {
             MoveTo(nextCellTarget, board);
             obj.PlayerEntered();
+        }
+        // The target cell is not empty and the player can't enter
+        else
+        {
+            OnWantToEnterFail?.Invoke();
         }
 
         return true;
@@ -36,12 +46,7 @@ public class PlayerMovement : MonoBehaviour
 
     public void MoveTo(Vector2Int cell, BoardManager board)
     {
-        _currentCellPos = cell;
-        transform.position = board.CellToWorld(_currentCellPos);
-    }
-
-    private Vector2Int GetCellPosition()
-    {
-        return _currentCellPos;
+        CurrentCellPos = cell;
+        transform.position = board.CellToWorld(CurrentCellPos);
     }
 }

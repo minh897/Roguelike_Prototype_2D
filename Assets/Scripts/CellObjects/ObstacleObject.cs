@@ -30,7 +30,6 @@ public class ObstacleObject : CellObject
         }
         if (_healthPoint > 0)
         {
-            GameManager.Instance.GetPlayer().PlayAttack();
             return false;
         }
 

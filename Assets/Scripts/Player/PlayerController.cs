@@ -2,31 +2,33 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
-    private Animator _animator;
-    private DamageFlash _damageFlash;
     private PlayerInputHandler _inputHandler;
     private PlayerMovement _movement;
+    private PlayerFeedback _feedback;
     
     private bool _isGameStop;
 
     void Awake()
     {
-        _animator = GetComponent<Animator>();
-        _damageFlash = GetComponent<DamageFlash>();
         _inputHandler = GetComponent<PlayerInputHandler>();
         _movement = GetComponent<PlayerMovement>();
+        _feedback = GetComponent<PlayerFeedback>();
     }
 
     void OnEnable()
     {
         _inputHandler.OnMovePressed += CallMovementLogic;
         _inputHandler.OnRestartPressed += RestartGame;
+        _movement.OnWantToEnterFail += _feedback.PlayAttack;
+        GameManager.OnGameOver += EnterGameOverState;
     }
 
     void OnDisable()
     {
         _inputHandler.OnMovePressed -= CallMovementLogic;
         _inputHandler.OnRestartPressed -= RestartGame;
+        _movement.OnWantToEnterFail -= _feedback.PlayAttack;
+        GameManager.OnGameOver -= EnterGameOverState;
     }
 
 #region PUBLIC
@@ -45,29 +47,17 @@ public class PlayerController : MonoBehaviour
         _movement.enabled = false;
     }
 
-    public void PlayAttack()
+    public void GotAttacked()
     {
-        _animator.SetTrigger("Attacking");
-        AudioManager.Instance.PlayAudio(
-            AudioManager.Instance.SoundLibrary.sfxAttacks, transform, 1f, false);
+        _feedback.PlayPlayerDamage();
     }
 
-    public void PlayFoodChomp()
+    public void Eat()
     {
-        AudioManager.Instance.PlayAudio(
-            AudioManager.Instance.SoundLibrary.sfxEatFoods, transform, 1f, false);
+        _feedback.PlayFoodChomp();
     }
 
-    public void PlayPlayerDown()
-    {
-        AudioManager.Instance.PlayAudio(
-            AudioManager.Instance.SoundLibrary.sfxPlayerDowns, transform, 1f, false);
-    }
-
-    public void PlayPlayerDamage()
-    {
-        _damageFlash.PlayDamageFlash();
-    }
+    public Vector2Int GetCellPosition() => _movement.CurrentCellPos;
 #endregion
 
 #region PRIVATE
@@ -87,6 +77,12 @@ public class PlayerController : MonoBehaviour
             AudioManager.Instance.PlayAudio(
                 AudioManager.Instance.SoundLibrary.sfxFootSteps, transform, 1f, false);
         }
+    }
+
+    private void EnterGameOverState()
+    {
+        _feedback.PlayPlayerDown();
+        EnterGameStopState();
     }
 #endregion
 }

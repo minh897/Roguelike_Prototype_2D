@@ -1,8 +1,11 @@
+using System;
 using UnityEngine;
 using UnityEngine.UIElements;
 
 public class GameManager : MonoBehaviour
 {
+    public static event Action OnGameOver;
+
     public static GameManager Instance { get; private set; }
     public TurnManager TurnManager { get; private set; }
 
@@ -116,12 +119,11 @@ public class GameManager : MonoBehaviour
 
     private void TriggerGameOver()
     {
-        player.PlayPlayerDown();
-        player.EnterGameStopState();        
-
         // Set game over ui to visible
         _gameOverPanel.style.visibility = Visibility.Visible;
         _gameOverMessage.text = "Game Over!\n\nYou traveled through\n" + _traveledLevel + " levels";
+
+        OnGameOver?.Invoke();
     }
 #endregion
 }
