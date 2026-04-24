@@ -8,13 +8,13 @@ public class ExitObject : CellObject
     public override void Init(Vector2Int cell)
     {
         base.Init(cell);
-        GameManager.Instance.GetBoard().SetCellTile(cell, exitTile);
+        BoardManager.Instance.SetCellTile(cell, exitTile);
     }
 
     public override void PlayerEntered()
     {
-        GameManager.Instance.DisplayWinUI();
         GameManager.Instance.GetPlayer().EnterGameStopState();
+        GameManager.Instance.DisplayWinUI();
         AudioManager.Instance.PlayAudio(
             AudioManager.Instance.SoundLibrary.victory, transform, 1f, false);
     }

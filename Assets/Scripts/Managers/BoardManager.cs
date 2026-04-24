@@ -10,6 +10,8 @@ public class CellData
 
 public class BoardManager : MonoBehaviour
 {
+    public static BoardManager Instance { get; private set; }
+
     [Header("Player")]
     [SerializeField] private PlayerController player;
 
@@ -45,6 +47,14 @@ public class BoardManager : MonoBehaviour
 #region UNITY
     void Awake()
     {
+        // Make sure there is only one instance of this class exist
+        if (Instance != null)
+        {
+            Destroy(gameObject);
+            return;
+        }
+        Instance = this;
+
         _grid = GetComponentInChildren<Grid>();
         _tilemap = GetComponentInChildren<Tilemap>();
         _emptyCellList = new();

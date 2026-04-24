@@ -2,12 +2,10 @@ using UnityEngine;
 
 public class PlayerMovement : MonoBehaviour
 {
-    private BoardManager _board;
-
     private Vector2Int _currentCellPos;
     private Vector2Int _direction;
 
-    public bool TryToMove(Vector2 input)
+    public bool TryToMove(Vector2 input, BoardManager board)
     {
         if (!enabled)
             return false;
@@ -15,40 +13,31 @@ public class PlayerMovement : MonoBehaviour
         _direction = new((int)input.x, (int)input.y);
 
         Vector2Int nextCellTarget = _currentCellPos + _direction;
-        CellData nextCellData = _board.GetCellData(nextCellTarget);
+        CellData nextCellData = board.GetCellData(nextCellTarget);
 
-        // Stop player from occupying an impassable cell
+        // Stop player from occupying an impassable cell (borders)
         if (nextCellData != null && !nextCellData.passable)
             return false;
 
-        // Player can move to a cell that doesn't have a cell object
+        // Check the condition for the player to occupy a passable cell
         CellObject obj = nextCellData.containedObject;
         if (obj == null)
         {
-            MoveTo(nextCellTarget);
-        }
-
-        // Check the condition for the player to occupy a cell containing an object
+            MoveTo(nextCellTarget, board);
+        } 
         else if (obj.PlayerWantsToEnter())
         {
-            MoveTo(nextCellTarget);
+            MoveTo(nextCellTarget, board);
             obj.PlayerEntered();
         }
 
         return true;
     }
 
-    // Spawn the player character on game board
-    public void Spawn(BoardManager boardManager, Vector2Int cell)
-    {
-        _board = boardManager;
-        MoveTo(cell);
-    }
-
-    private void MoveTo(Vector2Int cell)
+    public void MoveTo(Vector2Int cell, BoardManager board)
     {
         _currentCellPos = cell;
-        transform.position = _board.CellToWorld(_currentCellPos);
+        transform.position = board.CellToWorld(_currentCellPos);
     }
 
     private Vector2Int GetCellPosition()

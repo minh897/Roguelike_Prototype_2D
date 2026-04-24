@@ -22,7 +22,6 @@ public class GameManager : MonoBehaviour
     private int _traveledLevel;
     private int _foodAmount;
 
-#region UNITY
     void Awake()
     {
         // Make sure there is only one instance of this class exist
@@ -56,7 +55,6 @@ public class GameManager : MonoBehaviour
     {
         StartNewGame();
     }
-#endregion
 
 #region PUBLIC
     public BoardManager GetBoard() => board;
@@ -89,7 +87,7 @@ public class GameManager : MonoBehaviour
         board.CleanBoard();
         board.Init();
 
-        // player.Spawn(board, playerInitialPos);
+        player.Init(playerInitialPos);
     }
 
     public void StartNewGame()
@@ -106,7 +104,7 @@ public class GameManager : MonoBehaviour
         board.CleanBoard();
         board.Init();
 
-        player.Init(board, playerInitialPos);
+        player.Init(playerInitialPos);
     }
 #endregion
 
@@ -119,8 +117,8 @@ public class GameManager : MonoBehaviour
     private void TriggerGameOver()
     {
         player.PlayPlayerDown();
-        player.EnterGameStopState();
-        
+        player.EnterGameStopState();        
+
         // Set game over ui to visible
         _gameOverPanel.style.visibility = Visibility.Visible;
         _gameOverMessage.text = "Game Over!\n\nYou traveled through\n" + _traveledLevel + " levels";

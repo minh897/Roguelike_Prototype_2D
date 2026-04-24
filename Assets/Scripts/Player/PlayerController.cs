@@ -2,12 +2,11 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
-    private BoardManager _board;
     private Animator _animator;
     private DamageFlash _damageFlash;
     private PlayerInputHandler _inputHandler;
-    private PlayerMovement _playerMovement;
-
+    private PlayerMovement _movement;
+    
     private bool _isGameStop;
 
     void Awake()
@@ -15,7 +14,7 @@ public class PlayerController : MonoBehaviour
         _animator = GetComponent<Animator>();
         _damageFlash = GetComponent<DamageFlash>();
         _inputHandler = GetComponent<PlayerInputHandler>();
-        _playerMovement = GetComponent<PlayerMovement>();
+        _movement = GetComponent<PlayerMovement>();
     }
 
     void OnEnable()
@@ -31,23 +30,19 @@ public class PlayerController : MonoBehaviour
     }
 
 #region PUBLIC
-    public void Init(BoardManager boardManager, Vector2Int cell)
+    public void Init(Vector2Int cell)
     {
         _isGameStop = false;
-        _playerMovement.enabled = true;
-        _playerMovement.Spawn(boardManager, cell);
+        _movement.enabled = true;
+
+        // Spawn the player character on the game board
+        _movement.MoveTo(cell, BoardManager.Instance); 
     }
 
     public void EnterGameStopState()
     {
         _isGameStop = true;
-        _playerMovement.enabled = false;
-    }
-
-    public void RestartGame()
-    {
-        if (_isGameStop)
-            GameManager.Instance.StartNewGame();
+        _movement.enabled = false;
     }
 
     public void PlayAttack()
@@ -76,9 +71,17 @@ public class PlayerController : MonoBehaviour
 #endregion
 
 #region PRIVATE
+    private void RestartGame()
+    {
+        if (_isGameStop)
+            GameManager.Instance.StartNewGame();
+    }
+
     private void CallMovementLogic(Vector2 input)
     {
-        if (_playerMovement.TryToMove(input))
+        // Tick only happens when a movement is made
+        // not when the input is called
+        if (_movement.TryToMove(input, BoardManager.Instance))
         {
             GameManager.Instance.TurnManager.Tick();
             AudioManager.Instance.PlayAudio(
