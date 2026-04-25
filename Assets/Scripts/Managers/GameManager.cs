@@ -16,15 +16,13 @@ public class GameManager : MonoBehaviour
     [SerializeField] private Vector2Int playerInitialPos;
     [SerializeField] private int startFoodAmount;
 
-    private VisualElement _gameOverPanel;
-    private VisualElement _winPanel;
+    private VisualElement _endPanel;
     private Label _foodAmountLabel;
     private Label _gameOverMessageLabel;
+    private Label _victoryMessageLabel;
     private Label _enemyStatLabel;
     private Label _foodStatLabel;
-    private Label _levelStatLabel;
 
-    private int _traveledLevel;
     private int _foodAmount;
     private int _enemyDefeated;
     public bool _victory { get; private set; }
@@ -42,25 +40,14 @@ public class GameManager : MonoBehaviour
         TurnManager = new();
         
         _foodAmountLabel = uiDoc.rootVisualElement.Q<Label>("FoodAmount");
-        _gameOverPanel = uiDoc.rootVisualElement.Q<VisualElement>("GameOverPanel");
-        _winPanel = uiDoc.rootVisualElement.Q<VisualElement>("VictoryPanel");
+        _endPanel = uiDoc.rootVisualElement.Q<VisualElement>("EndPanel");
 
-        _gameOverMessageLabel = _gameOverPanel.Q<Label>("GameOverMessage");
+        _gameOverMessageLabel = _endPanel.Q<Label>("GameOverMessage");
+        _victoryMessageLabel = _endPanel.Q<Label>("VictoryMessage");
 
-        _enemyStatLabel = _winPanel.Q<Label>("EnemyStat");
-        _foodStatLabel = _winPanel.Q<Label>("FoodStat");
-        _levelStatLabel = _winPanel.Q<Label>("LevelStat");
+        _enemyStatLabel = _endPanel.Q<Label>("EnemyStat");
+        _foodStatLabel = _endPanel.Q<Label>("FoodStat");
     }
-
-    // void OnEnable()
-    // {
-    //     TurnManager.OnTick += OnTurnHappen;
-    // }
-
-    // void OnDisable()
-    // {
-    //     TurnManager.OnTick -= OnTurnHappen;
-    // }
 
     void Start()
     {
@@ -85,11 +72,9 @@ public class GameManager : MonoBehaviour
     {
         TurnManager.OnTick += OnTurnHappen;
 
-        _gameOverPanel.style.visibility = Visibility.Hidden;
-        _winPanel.style.visibility = Visibility.Hidden;
+        _endPanel.style.visibility = Visibility.Hidden;
 
         // Gameplay rule: always start over at level 1, and reset traveled level to 0
-        _traveledLevel = 0;
         _enemyDefeated = 0;
         _foodAmount = startFoodAmount;
 
@@ -100,12 +85,11 @@ public class GameManager : MonoBehaviour
 
     public void TriggerVictory()
     {
-        _traveledLevel++;
-
         _enemyStatLabel.text = "Enemy defeated: " + _enemyDefeated;
         _foodStatLabel.text= "Food remain: " + _foodAmount;
-        _levelStatLabel.text= "Level traveled: " + _traveledLevel;
-        _winPanel.style.visibility = Visibility.Visible;
+        _victoryMessageLabel.style.display = DisplayStyle.Flex;
+        _gameOverMessageLabel.style.display = DisplayStyle.None;
+        _endPanel.style.visibility = Visibility.Visible;
         
         TurnManager.OnTick -= OnTurnHappen;
 
@@ -132,8 +116,9 @@ public class GameManager : MonoBehaviour
     private void TriggerGameOver()
     {
         // Set game over ui to visible
-        _gameOverPanel.style.visibility = Visibility.Visible;
-        _gameOverMessageLabel.text = "Game Over!\n\nYou traveled through\n" + _traveledLevel + " levels";
+        _victoryMessageLabel.style.display = DisplayStyle.None;
+        _gameOverMessageLabel.style.display = DisplayStyle.Flex;
+        _endPanel.style.visibility = Visibility.Visible;
 
         TurnManager.OnTick -= OnTurnHappen;
 
