@@ -44,7 +44,6 @@ public class BoardManager : MonoBehaviour
     private CellData[,] _boardData;
     private List<Vector2Int> _emptyCellList;
 
-#region UNITY
     void Awake()
     {
         // Make sure there is only one instance of this class exist
@@ -55,11 +54,10 @@ public class BoardManager : MonoBehaviour
         }
         Instance = this;
 
+        _emptyCellList = new();
         _grid = GetComponentInChildren<Grid>();
         _tilemap = GetComponentInChildren<Tilemap>();
-        _emptyCellList = new();
     }
-#endregion
 
 #region PUBLIC
     public void Init()
@@ -109,9 +107,8 @@ public class BoardManager : MonoBehaviour
     {
         if (cellIndex.x < 0 || cellIndex.x >= width
             || cellIndex.y < 0 || cellIndex.y >= height)
-        {
             return null;
-        }
+
         return _boardData[cellIndex.x, cellIndex.y];
     }
 
@@ -130,9 +127,7 @@ public class BoardManager : MonoBehaviour
     {
         // First time initializing the game board
         if (_boardData == null)
-        {
             return;
-        }
         
         for (int x = 0; x < width; x++)
         {
@@ -140,9 +135,8 @@ public class BoardManager : MonoBehaviour
             {
                 var cellContainedObj = _boardData[x, y].containedObject;
                 if (cellContainedObj != null)
-                {
                     Destroy(cellContainedObj.gameObject);
-                }
+                    
                 Vector3Int position = new(x, y, 0);
                 _tilemap.SetTile(position, null);
             }

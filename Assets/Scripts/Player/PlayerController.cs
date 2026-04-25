@@ -5,8 +5,6 @@ public class PlayerController : MonoBehaviour
     private PlayerInputHandler _inputHandler;
     private PlayerMovement _movement;
     private PlayerFeedback _feedback;
-    
-    private bool _isGameStop;
 
     void Awake()
     {
@@ -18,23 +16,21 @@ public class PlayerController : MonoBehaviour
     void OnEnable()
     {
         _inputHandler.OnMovePressed += CallMovementLogic;
-        _inputHandler.OnRestartPressed += RestartGame;
         _movement.OnWantToEnterFail += _feedback.PlayAttack;
         GameManager.OnGameOver += EnterGameOverState;
+        GameManager.OnVictory += EnterGameStopState;
     }
 
     void OnDisable()
     {
         _inputHandler.OnMovePressed -= CallMovementLogic;
-        _inputHandler.OnRestartPressed -= RestartGame;
         _movement.OnWantToEnterFail -= _feedback.PlayAttack;
         GameManager.OnGameOver -= EnterGameOverState;
+        GameManager.OnVictory -= EnterGameStopState;
     }
-
 #region PUBLIC
     public void Init(Vector2Int cell)
     {
-        _isGameStop = false;
         _movement.enabled = true;
 
         // Spawn the player character on the game board
@@ -43,8 +39,8 @@ public class PlayerController : MonoBehaviour
 
     public void EnterGameStopState()
     {
-        _isGameStop = true;
         _movement.enabled = false;
+        _inputHandler.OnRestartPressed += RestartGame;
     }
 
     public void GotAttacked()
@@ -63,8 +59,8 @@ public class PlayerController : MonoBehaviour
 #region PRIVATE
     private void RestartGame()
     {
-        if (_isGameStop)
-            GameManager.Instance.StartNewGame();
+        GameManager.Instance.StartNewGame();
+        _inputHandler.OnRestartPressed -= RestartGame;
     }
 
     private void CallMovementLogic(Vector2 input)

@@ -13,8 +13,7 @@ public class ExitObject : CellObject
 
     public override void PlayerEntered()
     {
-        GameManager.Instance.GetPlayer().EnterGameStopState();
-        GameManager.Instance.DisplayWinUI();
+        GameManager.Instance.TriggerVictory();
         AudioManager.Instance.PlayAudio(
             AudioManager.Instance.SoundLibrary.victory, transform, 1f, false);
     }

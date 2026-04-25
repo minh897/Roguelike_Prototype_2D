@@ -47,6 +47,7 @@ public class Enemy : CellObject
             _damageFlash.PlayDamageFlash();
             return false;
         }
+        GameManager.Instance.IncreaseEnemyDefeated();
         Destroy(gameObject);
         return true;
     }
