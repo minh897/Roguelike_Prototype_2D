@@ -111,6 +111,15 @@ namespace InputActions
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Progress"",
+                    ""type"": ""Button"",
+                    ""id"": ""d6f52c54-cb2e-4c88-8a67-1bcc728b8f30"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -243,6 +252,17 @@ namespace InputActions
                     ""processors"": """",
                     ""groups"": ""Keyboard&Mouse"",
                     ""action"": ""Restart"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""90d97a63-e65b-496f-b2db-06b4d1deea31"",
+                    ""path"": ""<Keyboard>/space"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard&Mouse"",
+                    ""action"": ""Progress"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -832,6 +852,7 @@ namespace InputActions
             m_Player = asset.FindActionMap("Player", throwIfNotFound: true);
             m_Player_Move = m_Player.FindAction("Move", throwIfNotFound: true);
             m_Player_Restart = m_Player.FindAction("Restart", throwIfNotFound: true);
+            m_Player_Progress = m_Player.FindAction("Progress", throwIfNotFound: true);
             // UI
             m_UI = asset.FindActionMap("UI", throwIfNotFound: true);
             m_UI_Navigate = m_UI.FindAction("Navigate", throwIfNotFound: true);
@@ -927,6 +948,7 @@ namespace InputActions
         private List<IPlayerActions> m_PlayerActionsCallbackInterfaces = new List<IPlayerActions>();
         private readonly InputAction m_Player_Move;
         private readonly InputAction m_Player_Restart;
+        private readonly InputAction m_Player_Progress;
         /// <summary>
         /// Provides access to input actions defined in input action map "Player".
         /// </summary>
@@ -946,6 +968,10 @@ namespace InputActions
             /// Provides access to the underlying input action "Player/Restart".
             /// </summary>
             public InputAction @Restart => m_Wrapper.m_Player_Restart;
+            /// <summary>
+            /// Provides access to the underlying input action "Player/Progress".
+            /// </summary>
+            public InputAction @Progress => m_Wrapper.m_Player_Progress;
             /// <summary>
             /// Provides access to the underlying input action map instance.
             /// </summary>
@@ -978,6 +1004,9 @@ namespace InputActions
                 @Restart.started += instance.OnRestart;
                 @Restart.performed += instance.OnRestart;
                 @Restart.canceled += instance.OnRestart;
+                @Progress.started += instance.OnProgress;
+                @Progress.performed += instance.OnProgress;
+                @Progress.canceled += instance.OnProgress;
             }
 
             /// <summary>
@@ -995,6 +1024,9 @@ namespace InputActions
                 @Restart.started -= instance.OnRestart;
                 @Restart.performed -= instance.OnRestart;
                 @Restart.canceled -= instance.OnRestart;
+                @Progress.started -= instance.OnProgress;
+                @Progress.performed -= instance.OnProgress;
+                @Progress.canceled -= instance.OnProgress;
             }
 
             /// <summary>
@@ -1309,6 +1341,13 @@ namespace InputActions
             /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
             /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
             void OnRestart(InputAction.CallbackContext context);
+            /// <summary>
+            /// Method invoked when associated input action "Progress" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+            /// </summary>
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+            void OnProgress(InputAction.CallbackContext context);
         }
         /// <summary>
         /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "UI" which allows adding and removing callbacks.

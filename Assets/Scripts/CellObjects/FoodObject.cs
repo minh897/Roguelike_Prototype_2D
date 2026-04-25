@@ -6,7 +6,8 @@ public class FoodObject : CellObject
 
     public override void PlayerEntered()
     {
-        GameManager.Instance.ChangeFood(_foodPoint);
+        GameManager.Instance.IncreaseTotalFood(_foodPoint);
+        GameManager.Instance.ChangeCurrentFood(_foodPoint);
         GameManager.Instance.GetPlayer().Eat();
         VFXManager.Instance.TriggerFloatingText(_foodPoint.ToString(), transform.position);
         Destroy(gameObject);  

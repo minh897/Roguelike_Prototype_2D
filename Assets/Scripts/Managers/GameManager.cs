@@ -16,16 +16,15 @@ public class GameManager : MonoBehaviour
     [SerializeField] private Vector2Int playerInitialPos;
     [SerializeField] private int startFoodAmount;
 
-    private VisualElement _endPanel;
+    private VisualElement _gameOverPanel;
+    private VisualElement _victoryPanel;
     private Label _foodAmountLabel;
-    private Label _gameOverMessageLabel;
-    private Label _victoryMessageLabel;
     private Label _enemyStatLabel;
     private Label _foodStatLabel;
 
-    private int _foodAmount;
+    private int _currentFood;
+    private int _foodCollected;
     private int _enemyDefeated;
-    public bool _victory { get; private set; }
 
     void Awake()
     {
@@ -39,14 +38,12 @@ public class GameManager : MonoBehaviour
 
         TurnManager = new();
         
+        _gameOverPanel = uiDoc.rootVisualElement.Q<VisualElement>("GameOverPanel");
+        _victoryPanel = uiDoc.rootVisualElement.Q<VisualElement>("VictoryPanel");
+
         _foodAmountLabel = uiDoc.rootVisualElement.Q<Label>("FoodAmount");
-        _endPanel = uiDoc.rootVisualElement.Q<VisualElement>("EndPanel");
-
-        _gameOverMessageLabel = _endPanel.Q<Label>("GameOverMessage");
-        _victoryMessageLabel = _endPanel.Q<Label>("VictoryMessage");
-
-        _enemyStatLabel = _endPanel.Q<Label>("EnemyStat");
-        _foodStatLabel = _endPanel.Q<Label>("FoodStat");
+        _enemyStatLabel = _gameOverPanel.Q<Label>("EnemyStat");
+        _foodStatLabel = _gameOverPanel.Q<Label>("FoodStat");
     }
 
     void Start()
@@ -55,45 +52,57 @@ public class GameManager : MonoBehaviour
     }
 
 #region PUBLIC
-    public void ChangeFood(int amount)
+    public void ChangeCurrentFood(int amount)
     {
-        _foodAmount += amount;
-        _foodAmountLabel.text = _foodAmount.ToString();
+        _currentFood += amount;
+        _foodAmountLabel.text = _currentFood.ToString();
 
         // Game over condition
-        if (_foodAmount <= 0)
+        if (_currentFood <= 0)
         {
             TriggerGameOver();
         }
     }
 
+    public void IncreaseTotalFood(int amount)
+    {
+        // Total food collected stat can't be affected by
+        // the changes of current food. That's why it needs a separate method
+        _foodCollected += amount;
+    }
+
+    [ContextMenu("New Level")]
+    public void NewLevel()
+    {
+        board.CleanBoard();
+        board.Init();
+        player.Init(playerInitialPos);
+
+        TurnManager.OnTick += OnTurnHappen;
+
+        _victoryPanel.style.visibility = Visibility.Hidden;
+    }
+
     [ContextMenu("Start new game")]
     public void StartNewGame()
     {
-        TurnManager.OnTick += OnTurnHappen;
-
-        _endPanel.style.visibility = Visibility.Hidden;
-
-        // Gameplay rule: always start over at level 1, and reset traveled level to 0
+        // Reset every stat
         _enemyDefeated = 0;
-        _foodAmount = startFoodAmount;
+        _foodCollected = 0;
+        _currentFood = startFoodAmount;
 
-        _foodAmountLabel.text = _foodAmount.ToString();
+        _foodAmountLabel.text = _currentFood.ToString();
+        _gameOverPanel.style.visibility = Visibility.Hidden;
 
         NewLevel();
     }
 
     public void TriggerVictory()
     {
-        _enemyStatLabel.text = "Enemy defeated: " + _enemyDefeated;
-        _foodStatLabel.text= "Food remain: " + _foodAmount;
-        _victoryMessageLabel.style.display = DisplayStyle.Flex;
-        _gameOverMessageLabel.style.display = DisplayStyle.None;
-        _endPanel.style.visibility = Visibility.Visible;
-        
+        OnVictory?.Invoke();
         TurnManager.OnTick -= OnTurnHappen;
 
-        OnVictory?.Invoke();
+        _victoryPanel.style.visibility = Visibility.Visible;
     }
 
     public void IncreaseEnemyDefeated()
@@ -110,27 +119,18 @@ public class GameManager : MonoBehaviour
 #region PRIVATE
     private void OnTurnHappen()
     {
-        ChangeFood(-1);
+        ChangeCurrentFood(-1);
     }
 
     private void TriggerGameOver()
     {
-        // Set game over ui to visible
-        _victoryMessageLabel.style.display = DisplayStyle.None;
-        _gameOverMessageLabel.style.display = DisplayStyle.Flex;
-        _endPanel.style.visibility = Visibility.Visible;
-
+        OnGameOver?.Invoke();
         TurnManager.OnTick -= OnTurnHappen;
 
-        OnGameOver?.Invoke();
-    }
-
-    [ContextMenu("New Level")]
-    private void NewLevel()
-    {
-        board.CleanBoard();
-        board.Init();
-        player.Init(playerInitialPos);
+        // Set game over ui to visible
+        _foodStatLabel.text= "Food collected: " + _foodCollected;
+        _enemyStatLabel.text = "Enemy defeated: " + _enemyDefeated;
+        _gameOverPanel.style.visibility = Visibility.Visible;
     }
 #endregion
 }

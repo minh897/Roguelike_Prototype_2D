@@ -73,7 +73,7 @@ public class Enemy : CellObject
         if (adjacentHorizontally || adjacentVertically)
         {
             _animator.SetTrigger("Attacking");
-            GameManager.Instance.ChangeFood(_damage);
+            GameManager.Instance.ChangeCurrentFood(_damage);
             GameManager.Instance.GetPlayer().GotAttacked();
             return;
         }

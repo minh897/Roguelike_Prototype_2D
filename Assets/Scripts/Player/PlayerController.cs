@@ -18,7 +18,7 @@ public class PlayerController : MonoBehaviour
         _inputHandler.OnMovePressed += CallMovementLogic;
         _movement.OnWantToEnterFail += _feedback.PlayAttack;
         GameManager.OnGameOver += EnterGameOverState;
-        GameManager.OnVictory += EnterGameStopState;
+        GameManager.OnVictory += EnterVictoryState;
     }
 
     void OnDisable()
@@ -26,7 +26,7 @@ public class PlayerController : MonoBehaviour
         _inputHandler.OnMovePressed -= CallMovementLogic;
         _movement.OnWantToEnterFail -= _feedback.PlayAttack;
         GameManager.OnGameOver -= EnterGameOverState;
-        GameManager.OnVictory -= EnterGameStopState;
+        GameManager.OnVictory -= EnterVictoryState;
     }
 #region PUBLIC
     public void Init(Vector2Int cell)
@@ -37,10 +37,9 @@ public class PlayerController : MonoBehaviour
         _movement.MoveTo(cell, BoardManager.Instance); 
     }
 
-    public void EnterGameStopState()
+    public void DisablePlayer()
     {
         _movement.enabled = false;
-        _inputHandler.OnRestartPressed += RestartGame;
     }
 
     public void GotAttacked()
@@ -63,6 +62,12 @@ public class PlayerController : MonoBehaviour
         _inputHandler.OnRestartPressed -= RestartGame;
     }
 
+    private void ProgressLevel()
+    {
+        GameManager.Instance.NewLevel();
+        _inputHandler.OnProgressPressed -= ProgressLevel;
+    }
+
     private void CallMovementLogic(Vector2 input)
     {
         // Tick only happens when a movement is made
@@ -77,8 +82,15 @@ public class PlayerController : MonoBehaviour
 
     private void EnterGameOverState()
     {
+        DisablePlayer();
         _feedback.PlayPlayerDown();
-        EnterGameStopState();
+        _inputHandler.OnRestartPressed += RestartGame;
+    }
+
+    private void EnterVictoryState()
+    {
+        DisablePlayer();
+        _inputHandler.OnProgressPressed += ProgressLevel;
     }
 #endregion
 }
